@@ -2,3 +2,4 @@ pywin32
 pyperclip
 mss
 keyboard
+accelerate

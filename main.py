@@ -137,7 +137,7 @@ def create_default_settings_file(filename):
     """デフォルト設定を持つ settings.ini ファイルを作成する"""
     config = configparser.ConfigParser()
     config['Settings'] = {
-        'model_id_or_path': '852wa/SDHK',
+        'model_id_or_path': 'KBlueLeaf/kohaku-v2.1',
         't_index': 32,
         'lora_path': '',
         'lora_strength': 1.0,
@@ -267,13 +267,21 @@ class ConfigWindow:
 process1 = None
 process2 = None
 monitor = None
-def main():
+def main(acceleration=None):
     global process1, process2, monitor
     # 初期設定
     initial_width = 512
     initial_height = 512
     inputs = []
     config_filename = 'settings.ini'
+
+    acceleration_options = ["xformers", "tensorrt"]  # List of valid acceleration options
+
+    if acceleration is None:
+        acceleration = "xformers"  # Set default value to "xformers" if no option is provided
+    elif acceleration not in acceleration_options:
+        print(f"Invalid acceleration option. Available options: {', '.join(acceleration_options)}")
+        return
 
     # モニター設定を取得
     monitor = dummy_screen(initial_width, initial_height)
@@ -323,7 +331,7 @@ def main():
 
 
             # 新しいプロセスを作成して開始
-            process1 = Process(target=image_generation_process, args=(queue, fps_queue, user_settings["model_id_or_path"], t_index_list, None, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], 1, "tensorrt", True, 2, "self", 1.4, 0.5, False, True, 0.99, 10, monitor, inputs))
+            process1 = Process(target=image_generation_process, args=(queue, fps_queue, user_settings["model_id_or_path"], t_index_list, None, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], 1, acceleration, True, 2, "self", 1.4, 0.5, False, True, 0.99, 10, monitor, inputs))
             process1.start()
             process2 = Process(target=receive_images, args=(queue, fps_queue, user_settings))
             process2.start()
