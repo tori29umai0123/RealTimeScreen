@@ -40,7 +40,7 @@ git clone --branch test https://github.com/tori29umai0123/RealTimeScreen.git
 # 設定例
 model_id_or_path = 852wa/SDHK<br>
 t_index = 32<br>
-lora_path = C:\stable-diffusion-webui\models\Lora\test-1.5-trnkegr_04-128_sdhk.safetensors
+lora_path = C:\stable-diffusion-webui\models\Lora\test-1.5-trnkegr_04-128_sdhk.safetensors<br>
 lora_strength = 1.0<br>
 prompt = 1girl, chibi<br>
 negative_prompt = low quality, bad quality, blurry, low resolution<br>
