@@ -28,7 +28,8 @@ git clone --branch test https://github.com/tori29umai0123/RealTimeScreen.git
 cd C:/
 git clone --branch test https://github.com/tori29umai0123/RealTimeScreen.git
 ```
-②install_tensorrt.ps1を右クリック→PowerShellで実行（30分位かかります）。『Install completed』と表示されたら終了<br>
+②install_tensorrt.ps1を右クリック→PowerShellで実行（30分～1時間位かかります）。『Install completed』と表示されたら終了<br>
+初回のモデルエンジンビルドにめちゃくちゃ時間かかって不安になるけど『Install completed』が出てくるまで我慢してください。<br>
 ③RealTimeScreen_tensorrt.ps1を右クリック→PowerShellで実行<br>
 ④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
 ⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。
