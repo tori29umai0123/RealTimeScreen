@@ -46,13 +46,13 @@ copy_key = p<br>
 monitor_key = ctrl+m
 
 # パラメータ解説
-model_id_or_path：生成モデル名
-t_index：20～40目安。数値が高いほど元の画像に近くなる
-lora_path：LoRAのpath
-lora_strength:LoRAの効き具合
-prompt：プロンプト
-negative_prompt：ネガティブプロンプト
-copy_key：クリップボードに生成画像がコピーされるキー（デフォルト『P』）
+model_id_or_path：生成モデル名<br>
+t_index：20～40目安。数値が高いほど元の画像に近くなる<br>
+lora_path：LoRAのpath<br>
+lora_strength:LoRAの効き具合<br>
+prompt：プロンプト<br>
+negative_prompt：ネガティブプロンプト<br>
+copy_key：クリップボードに生成画像がコピーされるキー（デフォルト『P』）<br>
 monitor_key；キャプチャ画面を再設定するキー（デフォルト『ctrl+m』）
 
 
