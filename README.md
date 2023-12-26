@@ -1,5 +1,7 @@
 # RealTimeScreen
-StreamDiffusionを用いた高速i2iキャプチャアプリ
+StreamDiffusionを用いた高速i2iキャプチャアプリ。（80倍速動画）<br>
+![80](https://github.com/tori29umai0123/RealTimeScreen/assets/72191117/b218f707-a339-4594-8e70-2a1e2b26e80b)<br>
+
 
 # 前提環境
 OS：Windows10で確認済み<br>
