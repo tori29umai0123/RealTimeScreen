@@ -22,7 +22,7 @@ git clone --branch test https://github.com/tori29umai0123/RealTimeScreen.git
 このキーボードショートカットはsettings.iniファイルから設定することもできます。
 
 # 使い方（TensorRT）
-分かる人だけ使って下さい。はじめて使うモデルをよみこむ時はTensorRTがモデルをビルドするので時間がかかります（初回だけ）
+分かる人だけ使って下さい。はじめて使うモデルをよみこむ時はTensorRTがモデルをビルドするので時間がかかります（初回だけ）<br>
 ①コマンドプロンプトから適当なディレクトリでリポジトリをgit clone<br>
 ```
 cd C:/
