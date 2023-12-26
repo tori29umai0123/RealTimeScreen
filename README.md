@@ -1,5 +1,5 @@
 # RealTimeScreen
-LCM-LoRAを用いた高速i2iの検証用リポジトリ
+StreamDiffusionを用いた高速i2iキャプチャアプリ
 
 # 前提環境
 OS：Windows10で確認済み<br>
