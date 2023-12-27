@@ -40,6 +40,7 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 # 設定例
 model_id_or_path = 852wa/SDHK<br>
 t_index = 32<br>
+update_interval = 100<br>
 lora_path = C:\stable-diffusion-webui\models\Lora\test-1.5-trnkegr_04-128_sdhk.safetensors<br>
 lora_strength = 1.0<br>
 prompt = 1girl, chibi<br>
@@ -50,6 +51,7 @@ monitor_key = ctrl+m
 # パラメータ解説
 model_id_or_path：生成モデル名<br>
 t_index：20～40目安。数値が高いほど元の画像に近くなる<br>
+update_interval：50～200目安。生成更新頻度。数値が高いほど更新ペースが遅くなる。お絵描きソフトの挙動が重くなる時にこの数値を上げる<br>
 lora_path：LoRAのpath<br>
 lora_strength:LoRAの効き具合。絵柄LoRAの場合1.4位でいいかも<br>
 prompt：プロンプト<br>
