@@ -62,7 +62,7 @@ def dummy_screen(width, height):
     return screen_data
 
 
-def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, vae_path,lora_dict, prompt, negative_prompt, frame_buffer_size, acceleration, use_denoising_batch, seed, cfg_type, guidance_scale, delta, do_add_noise, enable_similar_image_filter, similar_image_filter_threshold, similar_image_filter_max_skip_frame, monitor, inputs):
+def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, vae_path,lora_dict, prompt, negative_prompt, frame_buffer_size, acceleration, use_denoising_batch, seed, cfg_type, guidance_scale, delta, do_add_noise, enable_similar_image_filter, similar_image_filter_threshold, similar_image_filter_max_skip_frame, monitor, inputs, update_interval):
     stream = StreamDiffusionWrapper(
         model_id_or_path=model_id_or_path,
         vae_id=vae_path,
@@ -94,12 +94,11 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, v
     input_screen = threading.Thread(target=screen, args=(monitor, inputs))
     input_screen.start()
 
-    update_interval = 1000
     last_update_time = time.time()
 
     while True:
         current_time = time.time()
-        if current_time - last_update_time >= update_interval / 1000.0:  # Check if the specified interval has elapsed
+        if current_time - last_update_time >= update_interval / 1000.0:
             try:
                 if len(inputs) < frame_buffer_size:
                     time.sleep(0.005)
@@ -126,7 +125,7 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, v
                 fps = 1 / (time.time() - start_time)
                 fps_queue.put(fps)
 
-                last_update_time = time.time()  # Update the last update time
+                last_update_time = time.time()
 
             except KeyboardInterrupt:
                 print(f"fps: {fps}")
@@ -139,6 +138,7 @@ def create_default_settings_file(filename):
     config['Settings'] = {
         'model_id_or_path': 'KBlueLeaf/kohaku-v2.1',
         't_index': 32,
+        'update_interval': 100,
         'lora_path': '',
         'lora_strength': 1.0,
         'prompt': '',
@@ -172,7 +172,7 @@ class ConfigWindow:
         self.root = root
         root.title("Config")
         label = tk.Label(root)
-        self.root.geometry("600x150")  # ウィンドウのサイズを設定
+        self.root.geometry("600x170")  # ウィンドウのサイズを設定
         root.attributes('-topmost', True)  # ウィンドウを最前面に保つ
         self.settings_updated = False  # 更新フラグ
 
@@ -191,29 +191,34 @@ class ConfigWindow:
         self.t_index_entry = ttk.Entry(root)
         self.t_index_entry.grid(row=1, column=1, sticky=tk.EW)
 
+        # update_intervalの入力
+        ttk.Label(root, text="update_interval").grid(row=2, column=0)
+        self.update_interval_entry = ttk.Entry(root)
+        self.update_interval_entry.grid(row=2, column=1, sticky=tk.EW)
+
         # LoRAモデルパス
-        ttk.Label(root, text="LoRAPath").grid(row=2, column=0)
+        ttk.Label(root, text="LoRAPath").grid(row=3, column=0)
         self.lora_path_entry = ttk.Entry(root)
-        self.lora_path_entry .grid(row=2, column=1, sticky=tk.EW)
+        self.lora_path_entry .grid(row=3, column=1, sticky=tk.EW)
 
         # LoRAstrength
-        ttk.Label(root, text="LoRA_strength").grid(row=3, column=0)
+        ttk.Label(root, text="LoRA_strength").grid(row=4, column=0)
         self.lora_strength_entry = ttk.Entry(root)
-        self.lora_strength_entry.grid(row=3, column=1, sticky=tk.EW)
+        self.lora_strength_entry.grid(row=4, column=1, sticky=tk.EW)
 
         # プロンプトの入力
-        ttk.Label(root, text="Prompt").grid(row=4, column=0)
+        ttk.Label(root, text="Prompt").grid(row=5, column=0)
         self.prompt_entry = ttk.Entry(root)
-        self.prompt_entry.grid(row=4, column=1, sticky=tk.EW)
+        self.prompt_entry.grid(row=5, column=1, sticky=tk.EW)
 
         # ネガティブプロンプトの入力
-        ttk.Label(root, text="Negative Prompt").grid(row=5, column=0)
+        ttk.Label(root, text="Negative Prompt").grid(row=6, column=0)
         self.negative_prompt_entry = ttk.Entry(root)
-        self.negative_prompt_entry.grid(row=5, column=1, sticky=tk.EW)
+        self.negative_prompt_entry.grid(row=6, column=1, sticky=tk.EW)
 
       # 設定ボタン
         self.update_button = ttk.Button(root, text="Setting", command=self.update_settings)
-        self.update_button.grid(row=6, column=0, columnspan=2, sticky=tk.EW)
+        self.update_button.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
 
         if not os.path.exists(config_filename):
             create_default_settings_file(config_filename)
@@ -222,6 +227,7 @@ class ConfigWindow:
 
         self.model_id_entry.insert(0, self.settings.get('model_id_or_path', ''))
         self.t_index_entry.insert(0, str(self.settings.get('t_index', '')))  # 数値は文字列に変換
+        self.update_interval_entry.insert(0, str(self.settings.get('update_interval', '')))  # 数値は文字列に変換
         self.lora_path_entry.insert(0, self.settings.get('lora_path', ''))
         self.lora_strength_entry.insert(0, str(self.settings.get('lora_strength', '')))  # 数値は文字列に変換
         self.prompt_entry.insert(0, self.settings.get('prompt', ''))
@@ -245,6 +251,7 @@ class ConfigWindow:
         return {
             'model_id_or_path': self.model_id_entry.get(),
             't_index': self.t_index_entry.get(),
+            'update_interval': self.update_interval_entry.get(),
             'lora_path': self.lora_path_entry.get(),
             'lora_strength': self.lora_strength_entry.get(),
             'prompt': self.prompt_entry.get(),
@@ -323,7 +330,7 @@ def main(acceleration=None):
             lora_path = user_settings.get("lora_path")
             lora_path = lora_path.replace("\\", "/")
             lora_strength = float(user_settings.get("lora_strength"))
-
+            update_interval = int(user_settings["update_interval"])
             if lora_path and lora_strength is not None:
                 lora_dict[lora_path] = lora_strength
             else:
@@ -331,7 +338,7 @@ def main(acceleration=None):
 
 
             # 新しいプロセスを作成して開始
-            process1 = Process(target=image_generation_process, args=(queue, fps_queue, user_settings["model_id_or_path"], t_index_list, None, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], 1, acceleration, True, 2, "self", 1.4, 0.5, False, True, 0.99, 10, monitor, inputs))
+            process1 = Process(target=image_generation_process, args=(queue, fps_queue, user_settings["model_id_or_path"], t_index_list, None, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], 1, acceleration, True, 2, "self", 1.4, 0.5, False, True, 0.99, 10, monitor, inputs, update_interval))
             process1.start()
             process2 = Process(target=receive_images, args=(queue, fps_queue, user_settings))
             process2.start()
