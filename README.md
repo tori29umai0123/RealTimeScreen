@@ -1,48 +1,46 @@
+**Switch to Japanese version**: [README.md](README.md)  
+**Switch to English version**: [README_en.md](README_en.md)
+
 # RealTimeScreen
-StreamDiffusionを用いた高速i2iキャプチャアプリ。（80倍速動画）<br>
+A fast i2i capture app using StreamDiffusion. (80x speed video)  <br>
 ![80](https://github.com/tori29umai0123/RealTimeScreen/assets/72191117/b218f707-a339-4594-8e70-2a1e2b26e80b)<br>
 
+## Prerequisites
+OS: Confirmed on Windows 10  <br>
+Ensure the following are installed:  <br>
+- git: [git](https://git-scm.com/downloads)<br>
+- Python: [3.10.8](https://www.python.org/downloads/release/python-3810/)<br>
+- CUDA Toolkit: [12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive)<br>
 
-# 前提環境
-OS：Windows10で確認済み<br>
-以下をインストールしておくこと<br>
-git: [git](https://git-scm.com/downloads)<br>
-Python: [3.10.8](https://www.python.org/downloads/release/python-3810/)<br>
-CUDA Toolkit: [12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive)<br>
+## How to Use
+For those who just want to get it running.<br>
 
-# 使い方
-とりあえず動けばいい人向け。<br>
-①コマンドプロンプトから適当なディレクトリでリポジトリをgit clone<br>
+1. Clone the repository in a suitable directory from the command prompt:<br>
+
 ```
 cd C:/
 git clone https://github.com/tori29umai0123/RealTimeScreen.git
 ```
-②install.ps1を右クリック→PowerShellで実行（15分位かかります）。『Install completed』と表示されたら終了<br>
-③RealTimeScreen.ps1を右クリック→PowerShellで実行<br>
-④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
-⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。
-このキーボードショートカットはsettings.iniファイルから設定することもできます。
+2. Right-click on `install.ps1` and run with PowerShell (takes about 15 minutes). Wait until "Install completed" is displayed.<br>
+3. Right-click on `RealTimeScreen.ps1` and run with PowerShell.<br>
+4. A translucent dummy screen appears upon launch. Place it over the area you want to capture (size is adjustable).<br>
+5. Press the "Setting" button to start generation. Press the "P" key to paste the image to the clipboard, and "Ctrl+M" to reselect the capture area. These keyboard shortcuts can also be set in the settings.ini file.<br>
 
-# 使い方（TensorRT）
-分かる人だけ使って下さい。はじめて使うモデルをよみこむ時はTensorRTがモデルをビルドするので時間がかかります（初回だけ）<br>
-①コマンドプロンプトから適当なディレクトリでリポジトリをgit clone<br>
-```
-cd C:/
-git clone https://github.com/tori29umai0123/RealTimeScreen.git
-```
-②install_tensorrt.ps1を右クリック→PowerShellで実行（30分～1時間位かかります）。『Install completed』と表示されたら終了<br>
-初回のモデルエンジンビルドにめちゃくちゃ時間かかって不安になるけど『Install completed』が出てくるまで我慢してください。<br>
-③RealTimeScreen_tensorrt.ps1を右クリック→PowerShellで実行<br>
-④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
-⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。
-このキーボードショートカットはsettings.iniファイルから設定することもできます。
+## How to Use (TensorRT)
+For those familiar with TensorRT. <br>
 
-# 更新
-①update.ps1（あるいはupdate_tensorrt.ps1）を右クリック→PowerShellで実行<br>
-②『Do you want to proceed?』と聞かれるので『y』を入力<br>
-③更新が始まります。うまくいかなかったから諦めて普通に再インストールして下さい。
+1. Follow steps 1 to 2 as above.<br>
+2. Right-click on `install_tensorrt.ps1` and run with PowerShell (takes 30 minutes to 1 hour). Wait for "Install completed" to be displayed.<br>
+3. Right-click on `RealTimeScreen_tensorrt.ps1` and run with PowerShell.<br>
+4. Follow steps 4 and 5 as above.
 
-# 設定例
+## Updates
+1. Right-click on `update.ps1` (or `update_tensorrt.ps1`) and run with PowerShell.<br>
+2. When asked "Do you want to proceed?", type "y".<br>
+3. The update begins. If it doesn't work, please reinstall.
+
+## Example Settings
+
 model_id_or_path = 852wa/SDHK<br>
 t_index = 32<br>
 update_interval = 100<br>
@@ -53,16 +51,14 @@ negative_prompt = low quality, bad quality, blurry, low resolution<br>
 copy_key = p<br>
 monitor_key = ctrl+m
 
-# パラメータ解説
-model_id_or_path：生成モデル名<br>
-t_index：20～40目安。数値が高いほど元の画像に近くなる<br>
-update_interval：50～200目安。生成更新頻度。数値が高いほど更新ペースが遅くなる。お絵描きソフト等の挙動が重い時に数値を上げる<br>
-lora_path：LoRAのpath<br>
-lora_strength:LoRAの効き具合。絵柄LoRAの場合1.4位でいいかも<br>
-prompt：プロンプト<br>
-negative_prompt：ネガティブプロンプト<br>
-copy_key：クリップボードに生成画像がコピーされるキー（デフォルト『P』）<br>
-monitor_key；キャプチャ画面を再設定するキー（デフォルト『ctrl+m』）
 
-
-
+## Parameter Explanation
+- `model_id_or_path`: Name of the generation model
+- `t_index`: Aim for 20-40. Higher values are closer to the original image.
+- `update_interval`: Aim for 50-200. Generation update frequency. Higher values mean slower updates.
+- `lora_path`: Path to LoRA
+- `lora_strength`: Strength of LoRA effect. About 1.4 might be good for style LoRA.
+- `prompt`: Prompt
+- `negative_prompt`: Negative prompt
+- `copy_key`: Key to copy the generated image to the clipboard (default "P")
+- `monitor_key`: Key to reset the capture screen (default "ctrl+m")
