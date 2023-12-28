@@ -1,5 +1,5 @@
-**Switch to Japanese version**: [README.md](README.md)  
-**Switch to English version**: [README_en.md](README_en.md)
+**Switch to Japanese version**: [README_ja.md](README.md)  
+**Switch to English version**: [README.md](README_en.md)
 
 # RealTimeScreen
 StreamDiffusionを用いた高速i2iキャプチャアプリ。（80倍速動画）<br>
