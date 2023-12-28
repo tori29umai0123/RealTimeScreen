@@ -40,7 +40,7 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 # 更新
 ①update.ps1（あるいはupdate_tensorrt.ps1）を右クリック→PowerShellで実行<br>
 ②『Do you want to proceed?』と聞かれるので『y』を入力<br>
-③勝手に更新が始まります。うまくいかなかったから諦めて普通に再インストールして下さい。
+③更新が始まります。うまくいかなかったから諦めて普通に再インストールして下さい。
 
 # 設定例
 model_id_or_path = 852wa/SDHK<br>
