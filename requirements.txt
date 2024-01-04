@@ -3,3 +3,4 @@ pyperclip
 mss
 keyboard
 accelerate
+logging

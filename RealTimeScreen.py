@@ -18,7 +18,7 @@ import win32clipboard
 import keyboard 
 import configparser
 from typing import Optional, Dict
-
+import logging
 
 from streamdiffusion.image_utils import pil2tensor, postprocess_image
 from utils.viewer import receive_images
@@ -297,7 +297,7 @@ def main():
     initial_width = 512
     initial_height = 512
     inputs = []
-    config_filename = dpath + 'settings.ini'
+    config_filename = os.path.join(dpath, 'settings.ini')
     acceleration = "xformers"
 
     # モニター設定を取得
@@ -382,7 +382,8 @@ def main():
         keyboard.unhook_all_hotkeys()  # キーボードの監視を解除
 
 if __name__ == "__main__":
-    logging.basicConfig(filename=dpath + 'error.log', level=logging.DEBUG)
+    log_filename = os.path.join(dpath, 'error.log')
+    logging.basicConfig(filename=log_filename , level=logging.DEBUG)
 
     try:
         fire.Fire(main)

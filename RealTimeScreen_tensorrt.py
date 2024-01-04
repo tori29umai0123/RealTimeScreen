@@ -18,14 +18,13 @@ import win32clipboard
 import keyboard 
 import configparser
 from typing import Optional, Dict
-
+import logging
 
 from streamdiffusion.image_utils import pil2tensor, postprocess_image
 from utils.viewer import receive_images
 from utils.wrapper import StreamDiffusionWrapper
 from utils.models_dl import download_diffusion_model
-
-
+dpath = os.path.dirname(sys.argv[0])
 
 def screen(monitor, inputs):
     with mss.mss() as sct:
@@ -292,21 +291,14 @@ class ConfigWindow:
 process1 = None
 process2 = None
 monitor = None
-def main(acceleration=None):
+def main():
     global process1, process2, monitor
     # 初期設定
     initial_width = 512
     initial_height = 512
     inputs = []
-    config_filename = 'settings.ini'
-
-    acceleration_options = ["xformers", "tensorrt"]  # List of valid acceleration options
-
-    if acceleration is None:
-        acceleration = "xformers"  # Set default value to "xformers" if no option is provided
-    elif acceleration not in acceleration_options:
-        print(f"Invalid acceleration option. Available options: {', '.join(acceleration_options)}")
-        return
+    config_filename = os.path.join(dpath, 'settings.ini')
+    acceleration = "tensorrt"
 
     # モニター設定を取得
     monitor = dummy_screen(initial_width, initial_height)
@@ -355,7 +347,7 @@ def main(acceleration=None):
                 lora_dict = None
 
             MODEL_ID = str(user_settings.get("model_id_or_path"))
-            stable_diffusion_path = "Models/Stable_diffusion/"
+            stable_diffusion_path = dpath + "Models/Stable_diffusion/"
             model_dir = stable_diffusion_path + MODEL_ID
             if not os.path.exists(model_dir):
                 download_diffusion_model(stable_diffusion_path, MODEL_ID)
@@ -390,10 +382,11 @@ def main(acceleration=None):
         keyboard.unhook_all_hotkeys()  # キーボードの監視を解除
 
 if __name__ == "__main__":
-    log_filename = 'error.log'
+    log_filename = os.path.join(dpath, 'error.log')
     logging.basicConfig(filename=log_filename , level=logging.DEBUG)
 
     try:
         fire.Fire(main)
     except Exception as e:
         logging.exception("エラーが発生しました")
+

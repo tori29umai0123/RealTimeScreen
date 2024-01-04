@@ -8,6 +8,9 @@ if (!(Test-Path -Path "venv")) {
 }
 .\venv\Scripts\activate
 
+Write-Output "upgrade pip..."
+python.exe -m pip install --upgrade pip
+
 Write-Output "Installing torch..."
 
 pip install torch==2.1.1+cu121 torchvision==0.16.1+cu121 --extra-index-url https://download.pytorch.org/whl/cu121
