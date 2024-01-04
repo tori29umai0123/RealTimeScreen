@@ -77,4 +77,4 @@ pip install pyinstaller
 pyinstaller C:/RealTimeScreen/RealTimeScreen.py（あるいはRealTimeScreen_tensorrt.py）
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 ```
-④C:\RealTimeScreen\dist\RealTimeScreen.exeを実行すると実行される。
+④C:\RealTimeScreen\dist\RealTimeScreen.exeを実行。
