@@ -62,3 +62,19 @@ prompt：プロンプト<br>
 negative_prompt：ネガティブプロンプト<br>
 copy_key：クリップボードに生成画像がコピーされるキー（デフォルト『P』）<br>
 monitor_key；キャプチャ画面を再設定するキー（デフォルト『ctrl+m』）
+
+# ビルド設定（開発者向け）
+①上記のインストール設定に従ってインストール<br>
+②セキュリティーソフトの設定で、フォルダと実行ファイル名を除外リストに追加する。<br>
+例：Windows Defenderの場合、Windows セキュリティ→ウイルスと脅威の防止→ウイルスと脅威の防止の設定→設定の管理→除外<br>
+RealTimeScreen.exe(プロセス)<br>
+RealTimeScreen_tensorrt.exe(プロセス)<br>
+C:\RealTimeScreen（フォルダ）<br>
+のように指定する。<br>
+③venv.cmdを実行。
+```
+pip install pyinstaller
+pyinstaller C:/RealTimeScreen/RealTimeScreen.py（あるいはRealTimeScreen_tensorrt.py）
+```
+④ビルド出来たファイルの C:\RealTimeScreen\dist\RealTimeScreen\_internal\xformers に C:\RealTimeScreen\venv\Lib\site-packages\xformers を上書き<br>
+⑤C:\RealTimeScreen\dist\RealTimeScreen.exeを実行すると実行される。
