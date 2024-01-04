@@ -18,8 +18,6 @@ import win32clipboard
 import keyboard 
 import configparser
 from typing import Optional, Dict
-import logging
-
 from streamdiffusion.image_utils import pil2tensor, postprocess_image
 from utils.viewer import receive_images
 from utils.wrapper import StreamDiffusionWrapper
@@ -382,11 +380,4 @@ def main():
         keyboard.unhook_all_hotkeys()  # キーボードの監視を解除
 
 if __name__ == "__main__":
-    log_filename = os.path.join(dpath, 'error.log')
-    logging.basicConfig(filename=log_filename , level=logging.DEBUG)
-
-    try:
-        fire.Fire(main)
-    except Exception as e:
-        logging.exception("エラーが発生しました")
-
+    fire.Fire(main)
