@@ -77,7 +77,7 @@ markdown
 Copy code
 # Build Instructions (For Developers)
 
-1. Follow the installation settings mentioned above.
+1. Follow the How to Use mentioned above.
 2. In your security software settings, add the folder and executable file names to the exclusion list. 
    Example: For Windows Defender, navigate to Windows Security → Virus & threat protection → Virus & threat protection settings → Manage settings → Exclusions, and specify:
    - RealTimeScreen.exe (Process)
