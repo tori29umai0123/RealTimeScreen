@@ -87,6 +87,6 @@ Copy code
 ```
 pip install pyinstaller
 pyinstaller C:/RealTimeScreen/RealTimeScreen.py (or RealTimeScreen_tensorrt.py)
+xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 ```
-4. Overwrite the folder C:\RealTimeScreen\dist\RealTimeScreen\_internal\xformers with C:\RealTimeScreen\venv\Lib\site-packages\xformers.
-5. Running C:\RealTimeScreen\dist\RealTimeScreen.exe will start the application.
+4. Running C:\RealTimeScreen\dist\RealTimeScreen.exe will start the application.
