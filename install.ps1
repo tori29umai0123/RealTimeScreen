@@ -17,7 +17,6 @@ pip install torch==2.1.1+cu121 torchvision==0.16.1+cu121 --extra-index-url https
 pip install --no-deps xformers==0.0.23
 
 Write-Output "Installing StreamDiffusion..."
-
 pip install git+https://github.com/cumulo-autumn/StreamDiffusion.git@main#egg=streamdiffusion[tensorrt]
 
 Write-Output "Installing deps..."

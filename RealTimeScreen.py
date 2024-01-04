@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import threading
+import multiprocessing
 from multiprocessing import Process, Queue
 from typing import List, Literal, Dict, Optional
 import numpy as np
@@ -18,6 +19,7 @@ import win32clipboard
 import keyboard 
 import configparser
 from typing import Optional, Dict
+#import logging
 from streamdiffusion.image_utils import pil2tensor, postprocess_image
 from utils.viewer import receive_images
 from utils.wrapper import StreamDiffusionWrapper
@@ -286,98 +288,108 @@ class ConfigWindow:
         return None
 
 
-process1 = None
-process2 = None
-monitor = None
-def main():
-    global process1, process2, monitor
-    # 初期設定
-    initial_width = 512
-    initial_height = 512
-    inputs = []
-    config_filename = os.path.join(dpath, 'settings.ini')
-    acceleration = "xformers"
+class MainApp:
+    def __init__(self):
+        self.process1 = None
+        self.process2 = None
+        self.monitor = None
+        self.inputs = []
+        self.config_filename = os.path.join(dpath, 'settings.ini')
+        self.acceleration = "xformers"
+        self.initial_width = 512
+        self.initial_height = 512
+        self.queue = Queue()
+        self.fps_queue = Queue()
+        self.monitor = dummy_screen(self.initial_width, self.initial_height)
+        self.root = tk.Tk()
+        self.config_window = ConfigWindow(self.root, self.config_filename)
+        self.settings = self.config_window.load_settings(self.config_filename)
 
-    # モニター設定を取得
-    monitor = dummy_screen(initial_width, initial_height)
-       
-    # rootとconfig windowを初期化
-    root = tk.Tk()
-    config_window = ConfigWindow(root, config_filename)
-    settings = config_window.load_settings(config_filename)
+        self.setup_callbacks()
 
-    queue = Queue()
-    fps_queue = Queue()
-    process1 = None
-    process2 = None
+    def setup_callbacks(self):
+        self.root.bind("<<SettingsUpdated>>", self.handle_settings_updated)
+        self.root.protocol("WM_DELETE_WINDOW", self.cleanup)
 
-    def on_monitor_key_press():
-        global monitor, process1, process2
-        monitor = dummy_screen(initial_width, initial_height)
-        handle_settings_updated(None)
+        monitor_key = self.settings.get('monitor_key', 'ctrl+m')
+        keyboard.add_hotkey(monitor_key, self.on_monitor_key_press)
 
+    def on_monitor_key_press(self):
+        self.monitor = dummy_screen(self.initial_width, self.initial_height)
+        self.handle_settings_updated(None)
 
-    # 設定更新イベントのリスナーを追加
-    def handle_settings_updated(event):
-        global process1, process2
-        user_settings = config_window.get_user_settings()
-        save_settings(config_filename, user_settings)
+    def handle_settings_updated(self, event):
+        user_settings = self.config_window.get_user_settings()
+        save_settings(self.config_filename, user_settings)
 
-# ユーザー設定を取得
         if user_settings:
-            # 以前のプロセスを終了およびジョイン
-            if process1:
-                process1.terminate()
-                process1.join()
-            if process2:
-                process2.terminate()
-                process2.join()
+            if self.process1:
+                self.process1.terminate()
+                self.process1.join()
+            if self.process2:
+                self.process2.terminate()
+                self.process2.join()
 
-            t_index_list = [int(user_settings.get("t_index")), 45]
-            lora_dict = {}  # 既存の辞書がない場合
-            lora_path = user_settings.get("lora_path")
-            lora_path = lora_path.replace("\\", "/")
-            lora_strength = float(user_settings.get("lora_strength"))
-            update_interval = int(user_settings["update_interval"])
-            if lora_path and lora_strength is not None:
+        t_index_list = [int(user_settings.get("t_index")), 45]
+        lora_dict = {}  # 既存の辞書がない場合
+        lora_path = user_settings.get("lora_path")
+        lora_path = lora_path.replace("\\", "/")
+        lora_strength = float(user_settings.get("lora_strength"))
+        update_interval = int(user_settings["update_interval"])
+        if lora_path and lora_strength is not None:
                 lora_dict[lora_path] = lora_strength
-            else:
+        else:
                 lora_dict = None
 
-            MODEL_ID = str(user_settings.get("model_id_or_path"))
-            stable_diffusion_path = dpath + "Models/Stable_diffusion/"
-            model_dir = stable_diffusion_path + MODEL_ID
-            if not os.path.exists(model_dir):
+        MODEL_ID = str(user_settings.get("model_id_or_path"))
+        stable_diffusion_path = os.path.join(dpath, 'Models/')
+        model_dir = stable_diffusion_path + MODEL_ID
+        if not os.path.exists(model_dir):
                 download_diffusion_model(stable_diffusion_path, MODEL_ID)
-            # 新しいプロセスを作成して開始
-            process1 = Process(target=image_generation_process, args=(queue, fps_queue, model_dir, t_index_list, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], acceleration, monitor, inputs, update_interval))
-            process1.start()
-            process2 = Process(target=receive_images, args=(queue, fps_queue, user_settings))
-            process2.start()
+        # 新しいプロセスを作成して開始
+        self.process1 = Process(target=image_generation_process, args=(self.queue, self.fps_queue, model_dir, t_index_list, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], self.acceleration, self.monitor, self.inputs, update_interval))
+        self.process1.start()
+        self.process2 = Process(target=receive_images, args=(self.queue, self.fps_queue, user_settings))
+        self.process2.start()
 
-    def cleanup():
-        if process1 and process1.is_alive():
-            process1.terminate()
-            process1.join()
+    def cleanup(self):
+        if self.process1 and self.process1.is_alive():
+            self.process1.terminate()
+            self.process1.join()
 
-        if process2 and process2.is_alive():
-            process2.terminate()
-            process2.join()
+        if self.process2 and self.process2.is_alive():
+            self.process2.terminate()
+            self.process2.join()
 
-        root.destroy()
+        self.root.destroy()
+        keyboard.unhook_all_hotkeys()
 
-    monitor_key = settings.get('monitor_key', 'ctrl+m')  # デフォルト値は 'ctrl+m'
-    keyboard.add_hotkey(monitor_key, on_monitor_key_press)
+    def run(self):
+        self.root.mainloop()
 
+def main(acceleration=None):
+    acceleration_options = ["xformers", "tensorrt"]
 
-    try:
-        root.bind("<<SettingsUpdated>>", handle_settings_updated)
-        root.protocol("WM_DELETE_WINDOW", cleanup)
+    if acceleration is None:
+        acceleration = "xformers"
+    elif acceleration not in acceleration_options:
+        print(f"Invalid acceleration option. Available options: {', '.join(acceleration_options)}")
+        return
 
-        root.mainloop()
-    except KeyboardInterrupt:
-        cleanup()
-        keyboard.unhook_all_hotkeys()  # キーボードの監視を解除
+    # MainAppのインスタンスを作成し、アプリケーションを実行
+    multiprocessing.freeze_support()
+    app = MainApp()
+    app.run()
 
 if __name__ == "__main__":
+    # log_path = os.path.join(dpath, 'error.log')
+    # logging.basicConfig(filename=log_path, level=logging.DEBUG)
+
+    # try:
+    #     multiprocessing.freeze_support()
+    #     fire.Fire(main)
+    # except Exception as e:
+    #     logging.exception("エラーが発生しました")
+
+    multiprocessing.freeze_support()
     fire.Fire(main)
