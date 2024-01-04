@@ -62,3 +62,31 @@ monitor_key = ctrl+m
 - `negative_prompt`: Negative prompt
 - `copy_key`: Key to copy the generated image to the clipboard (default "P")
 - `monitor_key`: Key to reset the capture screen (default "ctrl+m")
+
+# Build Instructions (For Developers)
+1. Follow the installation settings mentioned above.
+2. In your security software settings, add the folder and executable file names to the exclusion list. 
+   Example: For Windows Defender, navigate to Windows Security → Virus & threat protection → Virus & threat protection settings → Manage settings → Exclusions, and specify:
+   - RealTimeScreen.exe (Process)
+   - RealTimeScreen_tensorrt.exe (Process)
+   - C:\RealTimeScreen (Folder)
+
+3. Execute `venv.cmd`.
+4. 
+markdown
+Copy code
+# Build Instructions (For Developers)
+
+1. Follow the installation settings mentioned above.
+2. In your security software settings, add the folder and executable file names to the exclusion list. 
+   Example: For Windows Defender, navigate to Windows Security → Virus & threat protection → Virus & threat protection settings → Manage settings → Exclusions, and specify:
+   - RealTimeScreen.exe (Process)
+   - RealTimeScreen_tensorrt.exe (Process)
+   - C:\RealTimeScreen (Folder)
+3. Execute `venv.cmd`.
+```
+pip install pyinstaller
+pyinstaller C:/RealTimeScreen/RealTimeScreen.py (or RealTimeScreen_tensorrt.py)
+```
+4. Overwrite the folder C:\RealTimeScreen\dist\RealTimeScreen\_internal\xformers with C:\RealTimeScreen\venv\Lib\site-packages\xformers.
+5. Running C:\RealTimeScreen\dist\RealTimeScreen.exe will start the application.
