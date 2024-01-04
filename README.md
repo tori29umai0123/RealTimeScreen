@@ -10,7 +10,7 @@ StreamDiffusionを用いた高速i2iキャプチャアプリ。（80倍速動画
 OS：Windows10で確認済み<br>
 以下をインストールしておくこと<br>
 git: [git](https://git-scm.com/downloads)<br>
-Python: [3.10.8](https://www.python.org/downloads/release/python-3810/)<br>
+Python: [3.10.8](https://www.python.org/downloads/release/python-3108/)<br>
 CUDA Toolkit: [12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive)<br>
 
 # 使い方
