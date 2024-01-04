@@ -28,7 +28,7 @@ pip uninstall -y nvidia-cudnn-cu12
 Write-Output "Installing deps..."
 pip install --upgrade -r requirements.txt
 
-python benchmark.py --acceleration tensorrt
+python utils/benchmark.py --acceleration tensorrt
 
 Write-Output "Install completed"
 Read-Host | Out-Null ;

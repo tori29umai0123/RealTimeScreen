@@ -20,7 +20,7 @@ pip install git+https://github.com/cumulo-autumn/StreamDiffusion.git@main#egg=st
 Write-Output "Installing deps..."
 pip install --upgrade -r requirements.txt
 
-python benchmark.py --acceleration xformers
+python utils/benchmark.py --acceleration xformers
 
 Write-Output "Install completed"
 Read-Host | Out-Null ;
