@@ -76,7 +76,7 @@ C:\RealTimeScreen（フォルダ）<br>
 ```
 pip install pyinstaller
 pip install logging
-pyinstaller C:/RealTimeScreen/RealTimeScreen.py（あるいはRealTimeScreen_tensorrt.py）
+pyinstaller C:/RealTimeScreen/RealTimeScreen.py
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 ```
 ④C:\RealTimeScreen\dist\RealTimeScreen.exeを実行。
