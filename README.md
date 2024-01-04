@@ -65,7 +65,7 @@ copy_key：クリップボードに生成画像がコピーされるキー（デ
 monitor_key；キャプチャ画面を再設定するキー（デフォルト『ctrl+m』）
 
 # ビルド設定（開発者向け）
-①上記のインストールに従ってインストール<br>
+①上記のインストールに従ってインストール（install_tensorrt.ps1を）<br>
 ②セキュリティーソフトの設定で、フォルダと実行ファイル名を除外リストに追加する。<br>
 例：Windows Defenderの場合、Windows セキュリティ→ウイルスと脅威の防止→ウイルスと脅威の防止の設定→設定の管理→除外<br>
 RealTimeScreen.exe(プロセス)<br>
@@ -75,6 +75,7 @@ C:\RealTimeScreen（フォルダ）<br>
 ③venv.cmdを実行。
 ```
 pip install pyinstaller
+pip install logging
 pyinstaller C:/RealTimeScreen/RealTimeScreen.py（あるいはRealTimeScreen_tensorrt.py）
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 ```
