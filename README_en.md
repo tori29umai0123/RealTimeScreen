@@ -9,7 +9,7 @@ A fast i2i capture app using StreamDiffusion. (80x speed video)  <br>
 OS: Confirmed on Windows 10  <br>
 Ensure the following are installed:  <br>
 - git: [git](https://git-scm.com/downloads)<br>
-- Python: [3.10.8](https://www.python.org/downloads/release/python-3810/)<br>
+- Python: [3.10.8](https://www.python.org/downloads/release/python-3108/)<br>
 - CUDA Toolkit: [12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive)<br>
 
 ## How to Use
