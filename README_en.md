@@ -88,7 +88,7 @@ Copy code
 ```
 pip install pyinstaller
 pip install logging
-pyinstaller C:/RealTimeScreen/RealTimeScreen.py（あるいはRealTimeScreen_tensorrt.py）
+pyinstaller C:/RealTimeScreen/RealTimeScreen.py（
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 ```
 4. Running C:\RealTimeScreen\dist\RealTimeScreen.exe will start the application.
