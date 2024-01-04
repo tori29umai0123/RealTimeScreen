@@ -23,8 +23,9 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 ②install.ps1を右クリック→PowerShellで実行（15分位かかります）。『Install completed』と表示されたら終了<br>
 ③RealTimeScreen.ps1を右クリック→PowerShellで実行<br>
 ④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
-⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。
-このキーボードショートカットはsettings.iniファイルから設定することもできます。
+⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。<br>
+このキーボードショートカットはsettings.iniファイルから設定することもできます。<br>
+初めて使うモデルをロードする時はDL時間がかかりますので注意（初回のみオンラインでないとDLできません）。
 
 # 使い方（TensorRT）
 分かる人だけ使って下さい。はじめて使うモデルをよみこむ時はTensorRTがモデルをビルドするので時間がかかります（初回だけ）<br>
@@ -64,7 +65,7 @@ copy_key：クリップボードに生成画像がコピーされるキー（デ
 monitor_key；キャプチャ画面を再設定するキー（デフォルト『ctrl+m』）
 
 # ビルド設定（開発者向け）
-①上記のインストール設定に従ってインストール<br>
+①上記のインストールに従ってインストール（install_tensorrt.ps1を）<br>
 ②セキュリティーソフトの設定で、フォルダと実行ファイル名を除外リストに追加する。<br>
 例：Windows Defenderの場合、Windows セキュリティ→ウイルスと脅威の防止→ウイルスと脅威の防止の設定→設定の管理→除外<br>
 RealTimeScreen.exe(プロセス)<br>
@@ -74,7 +75,8 @@ C:\RealTimeScreen（フォルダ）<br>
 ③venv.cmdを実行。
 ```
 pip install pyinstaller
-pyinstaller C:/RealTimeScreen/RealTimeScreen.py（あるいはRealTimeScreen_tensorrt.py）
+pip install logging
+pyinstaller C:/RealTimeScreen/RealTimeScreen.py
+xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 ```
-④ビルド出来たファイルの C:\RealTimeScreen\dist\RealTimeScreen\_internal\xformers に C:\RealTimeScreen\venv\Lib\site-packages\xformers を上書き<br>
-⑤C:\RealTimeScreen\dist\RealTimeScreen.exeを実行すると実行される。
+④C:\RealTimeScreen\dist\RealTimeScreen.exeを実行。

@@ -25,6 +25,7 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 3. Right-click on `RealTimeScreen.ps1` and run with PowerShell.<br>
 4. A translucent dummy screen appears upon launch. Place it over the area you want to capture (size is adjustable).<br>
 5. Press the "Setting" button to start generation. Press the "P" key to paste the image to the clipboard, and "Ctrl+M" to reselect the capture area. These keyboard shortcuts can also be set in the settings.ini file.<br>
+Please note that when loading a model for the first time, it will take time to download, so be aware of this (for the first time only, an online connection is required for the download)
 
 ## How to Use (TensorRT)
 For those familiar with TensorRT. <br>
@@ -77,7 +78,7 @@ markdown
 Copy code
 # Build Instructions (For Developers)
 
-1. Follow the installation settings mentioned above.
+1. Follow the How to Use mentioned above.
 2. In your security software settings, add the folder and executable file names to the exclusion list. 
    Example: For Windows Defender, navigate to Windows Security → Virus & threat protection → Virus & threat protection settings → Manage settings → Exclusions, and specify:
    - RealTimeScreen.exe (Process)
@@ -86,7 +87,8 @@ Copy code
 3. Execute `venv.cmd`.
 ```
 pip install pyinstaller
-pyinstaller C:/RealTimeScreen/RealTimeScreen.py (or RealTimeScreen_tensorrt.py)
+pip install logging
+pyinstaller C:/RealTimeScreen/RealTimeScreen.py（
+xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 ```
-4. Overwrite the folder C:\RealTimeScreen\dist\RealTimeScreen\_internal\xformers with C:\RealTimeScreen\venv\Lib\site-packages\xformers.
-5. Running C:\RealTimeScreen\dist\RealTimeScreen.exe will start the application.
+4. Running C:\RealTimeScreen\dist\RealTimeScreen.exe will start the application.
