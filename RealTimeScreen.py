@@ -23,8 +23,11 @@ from typing import Optional, Dict
 from streamdiffusion.image_utils import pil2tensor, postprocess_image
 from utils.viewer import receive_images
 from utils.wrapper import StreamDiffusionWrapper
-from utils.models_dl import download_diffusion_model
+from utils.models_dl import download_diffusion_model, download_tagger_model
+from utils.tagger import modelLoad, analysis
+
 dpath = os.path.dirname(sys.argv[0])
+parent_directory = os.path.dirname(dpath)
 
 def screen(monitor):
     with mss.mss() as sct:
@@ -180,16 +183,17 @@ def save_settings(filename, new_settings):
         config.write(configfile)
 
 
-
+model = None
 class ConfigWindow:
-    def __init__(self, root, config_filename):
+    def __init__(self, root, config_filename, monitor):
 
         self.root = root
         root.title("Config")
         label = tk.Label(root)
-        self.root.geometry("600x170")  # ウィンドウのサイズを設定
+        self.root.geometry("600x200")  # ウィンドウのサイズを設定
         root.attributes('-topmost', True)  # ウィンドウを最前面に保つ
         self.settings_updated = False  # 更新フラグ
+        self.monitor = monitor
 
         # 第二列を伸縮可能に設定
         root.columnconfigure(1, weight=1)
@@ -235,6 +239,11 @@ class ConfigWindow:
         self.update_button = ttk.Button(root, text="Setting", command=self.update_settings)
         self.update_button.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
 
+      # Prompt分析ボタン 
+        self.prompt_analysis_button = ttk.Button(root, text="Prompt Analysis", command=self.prompt_analysis)
+        self.prompt_analysis_button.grid(row=8, column=0, columnspan=2, sticky=tk.EW)  
+        
+        
         if not os.path.exists(config_filename):
             create_default_settings_file(config_filename)
 
@@ -273,11 +282,30 @@ class ConfigWindow:
             'negative_prompt': self.negative_prompt_entry.get()
         }
 
+
     def update_settings(self):
         self.settings = self.get_user_settings()
         self.settings_updated = True
         self.root.event_generate("<<SettingsUpdated>>", when="tail")
 
+    def prompt_analysis(self):
+        global model
+        tagger_path = os.path.join(parent_directory, 'Models/')
+        MODEL_ID = "SmilingWolf/wd-v1-4-moat-tagger-v2"
+        model_dir = os.path.join(tagger_path, MODEL_ID)
+        if not os.path.exists(model_dir):
+            download_tagger_model(tagger_path, MODEL_ID)
+        if model is None:
+            model = modelLoad(model_dir)
+    
+        # 現在の画面のスクリーンショットを取得
+        image = screen(self.monitor)
+        # タグ分析を実行
+        tag = analysis(image, model, model_dir)
+
+        # タグをプロンプト入力フィールドに追加
+        self.prompt_entry.delete(0, tk.END)
+        self.prompt_entry.insert(0, tag)
 
     def get_settings(self):
         if self.settings_updated:
@@ -300,7 +328,7 @@ class MainApp:
         self.fps_queue = Queue()
         self.monitor = dummy_screen(self.initial_width, self.initial_height)
         self.root = tk.Tk()
-        self.config_window = ConfigWindow(self.root, self.config_filename)
+        self.config_window = ConfigWindow(self.root, self.config_filename, self.monitor)
         self.settings = self.config_window.load_settings(self.config_filename)
 
         self.setup_callbacks()

@@ -47,6 +47,15 @@ def check_and_download_model(model_dir, model_id, sub_dirs, files):
     else:
         print("モデルは既にダウンロード済みです。")
 
+def download_tagger_model(tagger_path, MODEL_ID):  
+    SUB_DIRS = [
+        ("variables", ["variables.data-00000-of-00001", "variables.index"]),
+    ]
+    FILES = ["keras_metadata.pb", "saved_model.pb", "selected_tags.csv"]
+    model_dir = tagger_path + MODEL_ID
+    check_and_download_model(model_dir, MODEL_ID, SUB_DIRS, FILES)
+
+
 def download_diffusion_model(stable_diffusion_path, MODEL_ID):
     SUB_DIRS = [
         ("feature_extractor", ["preprocessor_config.json"]),
@@ -65,3 +74,8 @@ if __name__ == "__main__":
     stable_diffusion_path = "Models/Stable_diffusion/"
     MODEL_ID = "852wa/SDHK"
     download_diffusion_model(stable_diffusion_path, MODEL_ID)
+
+    tagger_path = os.path.join(parent_directory, 'Models/')
+    MODEL_ID = "SmilingWolf/wd-v1-4-moat-tagger-v2"
+    model_dir = stable_diffusion_path + MODEL_ID
+    download_tagger_model(tagger_path, MODEL_ID)
