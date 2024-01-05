@@ -89,9 +89,6 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
         delta=1.0,
     )
 
-    #input_screen = threading.Thread(target=screen, args=(monitor, inputs))
-    #input_screen.start()
-
     last_update_time = time.time()
     while True:
         current_time = time.time()
