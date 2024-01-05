@@ -35,8 +35,8 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 ③RealTimeScreen_tensorrt.ps1を右クリック→PowerShellで実行<br>
 ④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
 ⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。<br>
+このキーボードショートカットはsettings.iniファイルから設定することもできます。<br>
 『Prompt Analysis』ボタンを押すとキャプチャ範囲のイラストのprompt分析をします。
-このキーボードショートカットはsettings.iniファイルから設定することもできます。
 
 # 更新
 ①update.ps1（あるいはupdate_tensorrt.ps1）を右クリック→PowerShellで実行<br>
