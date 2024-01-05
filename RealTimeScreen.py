@@ -26,12 +26,12 @@ from utils.wrapper import StreamDiffusionWrapper
 from utils.models_dl import download_diffusion_model
 dpath = os.path.dirname(sys.argv[0])
 
-def screen(monitor, inputs):
+def screen(monitor):
     with mss.mss() as sct:
         while True:
             img = sct.grab(monitor)
             img = PIL.Image.frombytes("RGB", img.size, img.bgra, "raw", "BGRX")
-            inputs.append(pil2tensor(img))
+            return img
 
 def dummy_screen(width, height):
     screen_data = {'top': 0, 'left': 0, 'width': width, 'height': height}
@@ -57,7 +57,6 @@ def dummy_screen(width, height):
     root.bind("<Configure>", update_geometry)
     root.attributes('-topmost', True)
     root.mainloop()
-
     return screen_data
 
 
@@ -91,13 +90,17 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
         delta=1.0,
     )
 
-    input_screen = threading.Thread(target=screen, args=(monitor, inputs))
-    input_screen.start()
+    #input_screen = threading.Thread(target=screen, args=(monitor, inputs))
+    #input_screen.start()
 
     last_update_time = time.time()
     while True:
         current_time = time.time()
         if current_time - last_update_time >= update_interval / 1000.0:
+            captured_image = screen(monitor)
+            tensor_image = pil2tensor(captured_image)
+            inputs.append(tensor_image)
+
             try:
                 if len(inputs) < frame_buffer_size:
                     time.sleep(0.005)
@@ -121,15 +124,14 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
                 for output_image in output_images:
                     queue.put(output_image, block=False)
 
-                fps = 1 / (time.time() - start_time)
-                fps_queue.put(fps)
+                fps = 1 / (time.time() - start_time)  # FPSの計算
+                fps_queue.put(fps)  # FPSをキューに追加 (ここを修正)
 
                 last_update_time = time.time()
 
             except KeyboardInterrupt:
                 print(f"fps: {fps}")
                 return
-
 
 def create_default_settings_file(filename):
     """デフォルト設定を持つ settings.ini ファイルを作成する"""
