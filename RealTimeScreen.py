@@ -28,10 +28,9 @@ dpath = os.path.dirname(sys.argv[0])
 
 def screen(monitor):
     with mss.mss() as sct:
-        while True:
-            img = sct.grab(monitor)
-            img = PIL.Image.frombytes("RGB", img.size, img.bgra, "raw", "BGRX")
-            return img
+        img = sct.grab(monitor)
+        img = PIL.Image.frombytes("RGB", img.size, img.bgra, "raw", "BGRX")
+        return img
 
 def dummy_screen(width, height):
     screen_data = {'top': 0, 'left': 0, 'width': width, 'height': height}
