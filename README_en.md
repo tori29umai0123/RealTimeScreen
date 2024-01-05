@@ -25,6 +25,7 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 3. Right-click on `RealTimeScreen.ps1` and run with PowerShell.<br>
 4. A translucent dummy screen appears upon launch. Place it over the area you want to capture (size is adjustable).<br>
 5. Press the "Setting" button to start generation. Press the "P" key to paste the image to the clipboard, and "Ctrl+M" to reselect the capture area. These keyboard shortcuts can also be set in the settings.ini file.<br>
+When the 'Prompt Analysis' button is pressed, it analyzes the prompt of the illustration within the capture range<br>
 Please note that when loading a model for the first time, it will take time to download, so be aware of this (for the first time only, an online connection is required for the download)
 
 ## How to Use (TensorRT)
