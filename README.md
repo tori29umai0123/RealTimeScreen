@@ -34,7 +34,8 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 初回のモデルエンジンビルドにめちゃくちゃ時間かかって不安になるけど『Install completed』が出てくるまで我慢してください。<br>
 ③RealTimeScreen_tensorrt.ps1を右クリック→PowerShellで実行<br>
 ④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
-⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。
+⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。<br>
+『Prompt Analysis』ボタンを押すとキャプチャ範囲のイラストのprompt分析をします。
 このキーボードショートカットはsettings.iniファイルから設定することもできます。
 
 # 更新
