@@ -64,26 +64,12 @@ monitor_key = ctrl+m
 - `negative_prompt`: Negative prompt
 - `copy_key`: Key to copy the generated image to the clipboard (default "P")
 - `monitor_key`: Key to reset the capture screen (default "ctrl+m")
-
+ 
 # Build Instructions (For Developers)
-1. Follow the installation settings mentioned above.
-2. In your security software settings, add the folder and executable file names to the exclusion list. 
-   Example: For Windows Defender, navigate to Windows Security → Virus & threat protection → Virus & threat protection settings → Manage settings → Exclusions, and specify:
-   - RealTimeScreen.exe (Process)
-   - RealTimeScreen_tensorrt.exe (Process)
-   - C:\RealTimeScreen (Folder)
-
-3. Execute `venv.cmd`.
-4. 
-markdown
-Copy code
-# Build Instructions (For Developers)
-
 1. Follow the How to Use mentioned above.
 2. In your security software settings, add the folder and executable file names to the exclusion list. 
    Example: For Windows Defender, navigate to Windows Security → Virus & threat protection → Virus & threat protection settings → Manage settings → Exclusions, and specify:
    - RealTimeScreen.exe (Process)
-   - RealTimeScreen_tensorrt.exe (Process)
    - C:\RealTimeScreen (Folder)
 3. Execute `venv.cmd`.
 ```
