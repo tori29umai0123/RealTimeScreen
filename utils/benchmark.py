@@ -16,7 +16,10 @@ from streamdiffusion.image_utils import postprocess_image
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from wrapper import StreamDiffusionWrapper
+from models_dl import download_diffusion_model
 
+current_directory = os.path.dirname(sys.argv[0])
+parent_directory = os.path.dirname(current_directory)
 
 def _postprocess_image(queue: Queue) -> None:
     while True:
@@ -87,14 +90,14 @@ def run(
         The seed, by default 2. if -1, use random seed.
     """ 
     
-    MODEL_ID = str(user_settings.get("model_id_or_path"))
-    stable_diffusion_path = os.path.join(dpath, 'Models/')
+    MODEL_ID = model_id_or_path
+    stable_diffusion_path = os.path.join(parent_directory, 'Models/')
     model_dir = stable_diffusion_path + MODEL_ID
     if not os.path.exists(model_dir):
         download_diffusion_model(stable_diffusion_path, MODEL_ID)
 
     stream = StreamDiffusionWrapper(
-        model_id_or_path=stable_diffusion_path,
+        model_id_or_path=model_dir,
         t_index_list=[32, 45],
         lora_dict=lora_dict,
         mode="img2img",

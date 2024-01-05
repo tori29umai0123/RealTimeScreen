@@ -304,7 +304,7 @@ class MainApp:
         self.settings = self.config_window.load_settings(self.config_filename)
 
         self.setup_callbacks()
-
+        create_default_settings_file(self.config_filename)
     def setup_callbacks(self):
         self.root.bind("<<SettingsUpdated>>", self.handle_settings_updated)
         self.root.protocol("WM_DELETE_WINDOW", self.cleanup)
