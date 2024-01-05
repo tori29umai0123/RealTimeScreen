@@ -85,9 +85,16 @@ def run(
         Whether to use denoising batch or not, by default True.
     seed : int, optional
         The seed, by default 2. if -1, use random seed.
-    """        
+    """ 
+    
+    MODEL_ID = str(user_settings.get("model_id_or_path"))
+    stable_diffusion_path = os.path.join(dpath, 'Models/')
+    model_dir = stable_diffusion_path + MODEL_ID
+    if not os.path.exists(model_dir):
+        download_diffusion_model(stable_diffusion_path, MODEL_ID)
+
     stream = StreamDiffusionWrapper(
-        model_id_or_path=model_id_or_path,
+        model_id_or_path=stable_diffusion_path,
         t_index_list=[32, 45],
         lora_dict=lora_dict,
         mode="img2img",
