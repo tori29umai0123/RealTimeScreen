@@ -12,9 +12,11 @@ Ensure the following are installed:  <br>
 - Python: [3.10.8](https://www.python.org/downloads/release/python-3108/)<br>
 - CUDA Toolkit: [12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive)<br>
 
-## How to Use
-For those who just want to get it running.<br>
+# How to use
+For those who just want to get it running.<br>. Built<br>
+https://note.com/tori29umai/n/nd5a21a2b1227
 
+# How to use (using command prompt)
 1. Clone the repository in a suitable directory from the command prompt:<br>
 
 ```
