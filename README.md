@@ -15,6 +15,9 @@ CUDA Toolkit: [12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive)<
 
 # 使い方
 とりあえず動けばいい人向け。<br>
+https://note.com/tori29umai/n/nd5a21a2b1227
+
+# 使い方（コマンドプロンプト使用）
 ①コマンドプロンプトから適当なディレクトリでリポジトリをgit clone<br>
 ```
 cd C:/
