@@ -3,7 +3,7 @@ import sys
 import time
 import threading
 import multiprocessing
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Queue, Value
 from typing import List, Literal, Dict, Optional
 import numpy as np
 import torch
@@ -62,19 +62,27 @@ def dummy_screen(width, height):
     return screen_data
 
 
-def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, lora_dict, prompt, negative_prompt, acceleration, monitor, inputs, update_interval):
+def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, lora_dict, prompt, negative_prompt, acceleration, monitor, inputs, update_interval, is_generating):
     frame_buffer_size = 1
+    if acceleration == "tensorrt":
+        width=512
+        height=512
+    else:
+        width=monitor['width'],
+        height=monitor['height'],
+
+
     stream = StreamDiffusionWrapper(
         model_id_or_path=model_id_or_path,
         vae_id=None,
         lora_dict=lora_dict,
         t_index_list=t_index_list,
         frame_buffer_size=frame_buffer_size,
-        width=monitor['width'],
-        height=monitor['height'],
+        width=width,
+        height=height,
         warmup=10,
         acceleration=acceleration,
-        do_add_noise=True,
+        do_add_noise=False,
         enable_similar_image_filter=True,
         similar_image_filter_threshold=0.99,
         similar_image_filter_max_skip_frame=10,
@@ -94,9 +102,23 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
 
     last_update_time = time.time()
     while True:
+        if not is_generating.value:  # フラグをチェック
+            time.sleep(0.1)  # 生成を一時停止
+            continue
+
         current_time = time.time()
         if current_time - last_update_time >= update_interval / 1000.0:
             captured_image = screen(monitor)
+
+            if acceleration == "tensorrt":
+                original_width, original_height = captured_image.size
+                max_size = 512
+                scale_factor = min(max_size / original_width, max_size / original_height)
+                new_width = int(original_width * scale_factor)
+                new_height = int(original_height * scale_factor)
+
+                captured_image = captured_image.resize((new_width, new_height))            
+
             tensor_image = pil2tensor(captured_image)
             inputs.append(tensor_image)
 
@@ -121,6 +143,11 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
                     output_images = [output_images]
 
                 for output_image in output_images:
+                    output_image = postprocess_image(output_image, output_type="pil")[0]
+
+                    if acceleration == "tensorrt":
+                        original_size = (monitor['width'], monitor['height'])
+                        output_image = output_image.resize(original_size)
                     queue.put(output_image, block=False)
 
                 fps = 1 / (time.time() - start_time)  # FPSの計算
@@ -185,7 +212,7 @@ def save_settings(filename, new_settings):
 
 model = None
 class ConfigWindow:
-    def __init__(self, root, config_filename, monitor):
+    def __init__(self, root, config_filename, monitor, is_generating):
 
         self.root = root
         root.title("Config")
@@ -194,6 +221,7 @@ class ConfigWindow:
         root.attributes('-topmost', True)  # ウィンドウを最前面に保つ
         self.settings_updated = False  # 更新フラグ
         self.monitor = monitor
+        self.is_generating = is_generating
 
         # 第二列を伸縮可能に設定
         root.columnconfigure(1, weight=1)
@@ -289,6 +317,7 @@ class ConfigWindow:
         self.root.event_generate("<<SettingsUpdated>>", when="tail")
 
     def prompt_analysis(self):
+        self.is_generating.value = False
         global model
         tagger_path = os.path.join(parent_directory, 'Models/')
         MODEL_ID = "SmilingWolf/wd-v1-4-moat-tagger-v2"
@@ -306,6 +335,8 @@ class ConfigWindow:
         # タグをプロンプト入力フィールドに追加
         self.prompt_entry.delete(0, tk.END)
         self.prompt_entry.insert(0, tag)
+        self.is_generating.value = True  # イラスト生成を再開
+
 
     def get_settings(self):
         if self.settings_updated:
@@ -315,20 +346,21 @@ class ConfigWindow:
 
 
 class MainApp:
-    def __init__(self):
+    def __init__(self, acceleration):
         self.process1 = None
         self.process2 = None
         self.monitor = None
         self.inputs = []
         self.config_filename = os.path.join(dpath, 'settings.ini')
-        self.acceleration = "xformers"
+        self.acceleration = acceleration
         self.initial_width = 512
         self.initial_height = 512
+        self.is_generating = Value('b', True)
         self.queue = Queue()
         self.fps_queue = Queue()
         self.monitor = dummy_screen(self.initial_width, self.initial_height)
         self.root = tk.Tk()
-        self.config_window = ConfigWindow(self.root, self.config_filename, self.monitor)
+        self.config_window = ConfigWindow(self.root, self.config_filename, self.monitor, self.is_generating)
         self.settings = self.config_window.load_settings(self.config_filename)
 
         self.setup_callbacks()
@@ -373,7 +405,7 @@ class MainApp:
         if not os.path.exists(model_dir):
                 download_diffusion_model(stable_diffusion_path, MODEL_ID)
         # 新しいプロセスを作成して開始
-        self.process1 = Process(target=image_generation_process, args=(self.queue, self.fps_queue, model_dir, t_index_list, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], self.acceleration, self.monitor, self.inputs, update_interval))
+        self.process1 = Process(target=image_generation_process, args=(self.queue, self.fps_queue, model_dir, t_index_list, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], self.acceleration, self.monitor, self.inputs, update_interval, self.is_generating))
         self.process1.start()
         self.process2 = Process(target=receive_images, args=(self.queue, self.fps_queue, user_settings))
         self.process2.start()
@@ -403,8 +435,7 @@ def main(acceleration=None):
         return
 
     # MainAppのインスタンスを作成し、アプリケーションを実行
-    multiprocessing.freeze_support()
-    app = MainApp()
+    app = MainApp(acceleration)
     app.run()
 
 if __name__ == "__main__":
