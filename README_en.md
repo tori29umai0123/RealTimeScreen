@@ -79,5 +79,5 @@ pip install pyinstaller
 pip install logging
 pyinstaller C:/RealTimeScreen/RealTimeScreen.py
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
+xcopy /E /I /Y venv\Lib\site-packages\cuda dist\RealTimeScreen\_internal\cuda
 ```
-4. Running C:\RealTimeScreen\dist\RealTimeScreen.exe will start the application.
