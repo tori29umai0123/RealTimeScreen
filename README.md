@@ -15,6 +15,9 @@ CUDA Toolkit: [12.1](https://developer.nvidia.com/cuda-12-1-0-download-archive)<
 
 # 使い方
 とりあえず動けばいい人向け。<br>
+https://note.com/tori29umai/n/nd5a21a2b1227
+
+# 使い方（コマンドプロンプト使用）
 ①コマンドプロンプトから適当なディレクトリでリポジトリをgit clone<br>
 ```
 cd C:/
@@ -25,7 +28,7 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 ④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
 ⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。<br>
 このキーボードショートカットはsettings.iniファイルから設定することもできます。<br>
-初めて使うモデルをロードする時はDL時間がかかりますので注意（初回のみオンラインでないとDLできません）。
+『Prompt Analysis』ボタンを押すとキャプチャ範囲のイラストのprompt分析をします。
 
 # 使い方（TensorRT）
 分かる人だけ使って下さい。はじめて使うモデルをよみこむ時はTensorRTがモデルをビルドするので時間がかかります（初回だけ）<br>
@@ -35,8 +38,8 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 ③RealTimeScreen_tensorrt.ps1を右クリック→PowerShellで実行<br>
 ④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
 ⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。<br>
+このキーボードショートカットはsettings.iniファイルから設定することもできます。<br>
 『Prompt Analysis』ボタンを押すとキャプチャ範囲のイラストのprompt分析をします。
-このキーボードショートカットはsettings.iniファイルから設定することもできます。
 
 # 更新
 ①update.ps1（あるいはupdate_tensorrt.ps1）を右クリック→PowerShellで実行<br>
@@ -78,5 +81,8 @@ pip install pyinstaller
 pip install logging
 pyinstaller C:/RealTimeScreen/RealTimeScreen.py
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
+xcopy /E /I /Y venv\Lib\site-packages\cuda dist\RealTimeScreen\_internal\cuda
+xcopy /E /I /Y venv\Lib\site-packages\tensorrt dist\RealTimeScreen\_internal\tensorrt
+xcopy /E /I /Y venv\Lib\site-packages\tensorrt_bindings dist\RealTimeScreen\_internal\tensorrt_bindings
+xcopy /E /I /Y venv\Lib\site-packages\tensorrt_libs dist\RealTimeScreen\_internal\tensorrt_libs
 ```
-④C:\RealTimeScreen\dist\RealTimeScreen.exeを実行。
