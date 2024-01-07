@@ -80,4 +80,7 @@ pip install logging
 pyinstaller C:/RealTimeScreen/RealTimeScreen.py
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 xcopy /E /I /Y venv\Lib\site-packages\cuda dist\RealTimeScreen\_internal\cuda
+xcopy /E /I /Y venv\Lib\site-packages\tensorrt dist\RealTimeScreen\_internal\tensorrt
+xcopy /E /I /Y venv\Lib\site-packages\tensorrt_bindings dist\RealTimeScreen\_internal\tensorrt_bindings
+xcopy /E /I /Y venv\Lib\site-packages\tensorrt_libs dist\RealTimeScreen\_internal\tensorrt_libs
 ```
