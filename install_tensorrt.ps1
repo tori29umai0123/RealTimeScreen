@@ -15,7 +15,7 @@ pip install --no-deps xformers==0.0.23
 
 Write-Output "Installing StreamDiffusion..."
 
-pip install git+https://github.com/cumulo-autumn/StreamDiffusion.git@main#egg=streamdiffusion[tensorrt]
+python setup.py develop easy_install streamdiffusion[tensorrt]
 
 pip install --pre --extra-index-url https://pypi.nvidia.com tensorrt==9.2.0.post12.dev5 --no-cache-dir
 
@@ -24,6 +24,9 @@ pip install polygraphy==0.47.1 --extra-index-url https://pypi.ngc.nvidia.com
 pip install onnx-graphsurgeon==0.3.26 --extra-index-url https://pypi.ngc.nvidia.com
 
 pip uninstall -y nvidia-cudnn-cu12
+
+pip install accelerate==0.25.0
+pip install tensorflow
 
 Write-Output "Installing deps..."
 pip install --upgrade -r requirements.txt

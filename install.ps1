@@ -18,6 +18,7 @@ pip install --no-deps xformers==0.0.23
 
 Write-Output "Installing StreamDiffusion..."
 pip install git+https://github.com/cumulo-autumn/StreamDiffusion.git@main#egg=streamdiffusion[tensorrt]
+pip install accelerate==0.25.0
 
 Write-Output "Installing deps..."
 pip install --upgrade -r requirements.txt

@@ -65,12 +65,18 @@ def dummy_screen(width, height):
 def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, lora_dict, prompt, negative_prompt, acceleration, monitor, inputs, update_interval, is_generating):
     frame_buffer_size = 1
     if acceleration == "tensorrt":
-        width=512
-        height=512
-    else:
-        width=monitor['width'],
-        height=monitor['height'],
+        original_width = width=monitor['width']
+        original_height = height=monitor['height']
+        max_size = 1024
+        scale_factor = min(max_size / original_width, max_size / original_height)
+        width = int(original_width * scale_factor)
+        height = int(original_height * scale_factor)
+        width = width - (width % 64)
+        height = height - (height % 64)
 
+    else:
+        width=monitor['width']
+        height=monitor['height']
 
     stream = StreamDiffusionWrapper(
         model_id_or_path=model_id_or_path,
@@ -82,7 +88,7 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
         height=height,
         warmup=10,
         acceleration=acceleration,
-        do_add_noise=False,
+        do_add_noise=True,
         enable_similar_image_filter=True,
         similar_image_filter_threshold=0.99,
         similar_image_filter_max_skip_frame=10,
@@ -112,11 +118,12 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
 
             if acceleration == "tensorrt":
                 original_width, original_height = captured_image.size
-                max_size = 512
+                max_size = 1024
                 scale_factor = min(max_size / original_width, max_size / original_height)
                 new_width = int(original_width * scale_factor)
                 new_height = int(original_height * scale_factor)
-
+                new_width = width - (width % 64)
+                new_height = height - (height % 64)
                 captured_image = captured_image.resize((new_width, new_height))            
 
             tensor_image = pil2tensor(captured_image)

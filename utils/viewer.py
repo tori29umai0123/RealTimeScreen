@@ -48,7 +48,7 @@ def _receive_images(
                     label.after(
                         0,
                         update_image,
-                        postprocess_image(queue.get(block=False), output_type="pil")[0],
+                        queue.get(block=False),
                         label,
                     )
                     last_update_time = current_time  # 最後の更新時間を更新
