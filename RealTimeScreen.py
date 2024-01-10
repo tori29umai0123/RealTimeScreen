@@ -27,7 +27,6 @@ from utils.models_dl import download_diffusion_model, download_tagger_model
 from utils.tagger import modelLoad, analysis
 
 dpath = os.path.dirname(sys.argv[0])
-parent_directory = os.path.dirname(dpath)
 
 def screen(monitor):
     with mss.mss() as sct:
@@ -326,7 +325,7 @@ class ConfigWindow:
     def prompt_analysis(self):
         self.is_generating.value = False
         global model
-        tagger_path = os.path.join(parent_directory, 'Models/')
+        tagger_path = os.path.join(dpath, 'Models/')
         MODEL_ID = "SmilingWolf/wd-v1-4-moat-tagger-v2"
         model_dir = os.path.join(tagger_path, MODEL_ID)
         if not os.path.exists(model_dir):
