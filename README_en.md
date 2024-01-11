@@ -5,6 +5,21 @@
 A fast i2i capture app using StreamDiffusion. (80x speed video)  <br>
 ![80](https://github.com/tori29umai0123/RealTimeScreen/assets/72191117/b218f707-a339-4594-8e70-2a1e2b26e80b)<br>
 
+# Disclaimer
+## Limitation of Liability
+The creators of this software bear no responsibility for any issues or damages related to the illustrations generated using this software. They are not liable for any problems or damages associated with the use of these illustrations.
+
+## Quality of Illustrations
+Regarding the results of the illustration generation, the creators do not guarantee the quality, accuracy, or appropriateness of the generated illustrations. These are automatically generated based on algorithms and data, and therefore, their quality may vary.
+
+## Copyright and Licensing
+Users are responsible for verifying and complying with the copyright and licensing of illustrations generated using this software. The creators do not hold responsibility for the copyright or usage rights of the generated illustrations.
+
+## Use of Software
+Users should use this software appropriately, ensuring not to violate legal regulations or infringe upon the rights of others. The creators are not responsible for the proper usage of the software by the users.
+
+This disclaimer absolves the creators of any responsibility for all issues and risks associated with the use of the illustration generation software. Users are deemed to have understood and accepted this upon using the software. Please read this disclaimer carefully before using the illustration generation software.
+
 ## Prerequisites
 OS: Confirmed on Windows 10  <br>
 Ensure the following are installed:  <br>
