@@ -18,7 +18,7 @@ Users are responsible for verifying and complying with the copyright and licensi
 ## Use of Software
 Users should use this software appropriately, ensuring not to violate legal regulations or infringe upon the rights of others. The creators are not responsible for the proper usage of the software by the users.
 
-This disclaimer absolves the creators of any responsibility for all issues and risks associated with the use of the illustration generation software. Users are deemed to have understood and accepted this upon using the software. Please read this disclaimer carefully before using the illustration generation software.
+This disclaimer absolves the creators of any responsibility for all issues and risks associated with the use of the illustration generation software. Users are deemed to have understood and accepted this upon using the software. Please read this disclaimer carefully before using RealTimeScreen.
 
 ## Prerequisites
 OS: Confirmed on Windows 10  <br>
