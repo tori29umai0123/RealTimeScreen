@@ -90,7 +90,6 @@ def analysis(image, model, model_dir):
     tag = run_single_image(image, model)
     return tag
 
-
 def character_analysis(image, model, model_dir):
     with open(os.path.join(model_dir, "selected_tags.csv"), "r", encoding="utf-8") as f:
         reader = csv.reader(f)
@@ -99,28 +98,26 @@ def character_analysis(image, model, model_dir):
         rows = l[1:]
     assert header[0] == "tag_id" and header[1] == "name" and header[2] == "category", f"unexpected csv format: {header}"
 
+    general_tags = [row[1] for row in rows[1:] if row[2] == "0"]
     character_tags = [row[1] for row in rows[1:] if row[2] == "4"]
 
-    # character_tagsが空の場合、Noneを返す
-    if not character_tags:
-        return None
-
-    tag_freq = {}
-    undesired_tags = []
-
-    def run_single_image(image, model, character_tags):
-        image = np.expand_dims(image, axis=0)  # Convert single image to a batch.
+    def run_single_image(image, model):
+        image = np.expand_dims(image, axis=0) # Convert single image to a batch.
         probs = model(image, training=False)
-        prob = probs[0].numpy()  # Get the probabilities of the first image in the batch (the only image)
+        prob = probs[0].numpy()  # Get the probabilities of the first image in the batch
 
-        character_tags_probs = []
-        thresh = 0.90
-        for i, p in enumerate(prob[4:]):  # 確率とインデックスを取得
-            if p >= thresh and i < len(character_tags):  # 閾値とインデックス範囲のチェック
-                tag_name = character_tags[i]  # 適切なタグ名を取得
-                percentage_str = f"{p * 100:.2f}%"  # パーセンテージを文字列に変換し、末尾に "%" を追加
-                character_tags_probs.append((tag_name, percentage_str))
-        return character_tags_probs
+        character_tags_with_probs = []
+        thresh = 0.35
+        for i, p in enumerate(prob[4:]):
+            if p >= thresh and i >= len(general_tags):
+                tag_index = i - len(general_tags)
+                if tag_index < len(character_tags):
+                    tag_name = character_tags[tag_index]
+                    prob_percent = round(p * 100, 2)  # 確率をパーセンテージに変換
+                    character_tags_with_probs.append((tag_name, f"{prob_percent}%"))
+
+        return character_tags_with_probs
+
     image = preprocess_image(image)
-    tags_with_probs = run_single_image(image, model, character_tags)
+    tags_with_probs = run_single_image(image, model)
     return tags_with_probs

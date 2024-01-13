@@ -306,10 +306,13 @@ class ConfigWindow:
         self.lora_strength_entry.insert(0, str(self.settings.get('lora_strength', '')))  # 数値は文字列に変換
         self.prompt_entry.insert(0, self.settings.get('prompt', ''))
         self.negative_prompt_entry.insert(0, self.settings.get('negative_prompt', ''))
-        character_check_setting = self.settings.get('character_check', False)
-        self.character_check_var.set(character_check_setting == 'True')  # 文字列 'True' かどうかを確認
-        nsfw_check_setting = self.settings.get('nsfw_check', False)
-        self.nsfw_check_var.set(nsfw_check_setting == 'True')  # 文字列 'True' かどうかを確認
+        character_check_setting = self.settings.get('character_check', '') 
+        nsfw_check_setting = self.settings.get('nsfw_check', '')
+
+        # ブール値を直接セット
+        self.character_check_var.set(character_check_setting)
+        self.nsfw_check_var.set(nsfw_check_setting)
+
 
         # character_check_analysisの定期実行を開始
         self.schedule_character_check_analysis()
@@ -341,6 +344,20 @@ class ConfigWindow:
             'nsfw_check': self.nsfw_check_var.get(),
         }
 
+
+    def get_current_settings(self):
+        """現在のUIから設定を取得する"""
+        return {
+            'model_id_or_path': self.model_id_entry.get(),
+            't_index': self.t_index_entry.get(),
+            'update_interval': self.update_interval_entry.get(),
+            'lora_path': self.lora_path_entry.get(),
+            'lora_strength': self.lora_strength_entry.get(),
+            'prompt': self.prompt_entry.get(),
+            'negative_prompt': self.negative_prompt_entry.get(),
+            'character_check': self.character_check_var.get(),
+            'nsfw_check': self.nsfw_check_var.get(),
+        }
 
     def update_settings(self):
         self.settings = self.get_user_settings()
@@ -390,16 +407,13 @@ class ConfigWindow:
             message = "あなたのイラストには次の要素が含まれています：\n" + \
                       "\n".join([f"{name}: {prob}" for name, prob in character_tags_probs if name not in self.ignore_list]) + \
                       "\n\nこのままイラストを生成続行しますか？"
-            user_choice = messagebox.askokcancel("キャラクターチェック", message)
+            # messagebox.showinfo を使用して、OK ボタンのみを表示
+            messagebox.showinfo("キャラクターチェック", message)
 
-            if user_choice:
-                # OKが選択された場合、キャラクタータグを無視リストに追加
-                for name, _ in character_tags_probs:
-                    if name not in self.ignore_list:
-                        self.ignore_list.append(name)
-            else:
-                # キャンセルが選択された場合、コンフィグウインドウを閉じる
-                self.root.destroy()
+            # OKが選択されたと見なし、キャラクタータグを無視リストに追加
+            for name, _ in character_tags_probs:
+                if name not in self.ignore_list:
+                    self.ignore_list.append(name)
 
         self.is_generating.value = True  # イラスト生成を再開
 
@@ -485,6 +499,12 @@ class MainApp:
         self.process2.start()
 
     def cleanup(self):
+        current_settings = self.config_window.get_current_settings()
+
+        # 設定をINIファイルに保存
+        save_settings(self.config_filename, current_settings)
+
+
         if self.process1 and self.process1.is_alive():
             self.process1.terminate()
             self.process1.join()
@@ -494,7 +514,9 @@ class MainApp:
             self.process2.join()
 
         self.root.destroy()
-        keyboard.unhook_all_hotkeys()
+
+        # 代替のホットキー解除処理
+        keyboard.unhook_all()
 
     def run(self):
         self.root.mainloop()
