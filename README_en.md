@@ -67,6 +67,8 @@ lora_path = C:\stable-diffusion-webui\models\Lora\test-1.5-trnkegr_04-128_sdhk.s
 lora_strength = 1.0<br>
 prompt = 1girl, chibi<br>
 negative_prompt = low quality, bad quality, blurry, low resolution<br>
+character_check = True<br>
+nsfw_check = True<br>
 copy_key = p<br>
 monitor_key = ctrl+m
 
@@ -79,6 +81,8 @@ monitor_key = ctrl+m
 - `lora_strength`: Strength of LoRA effect. About 1.4 might be good for style LoRA.
 - `prompt`: Prompt
 - `negative_prompt`: Negative prompt
+- `character_check`: Checks for the presence of copyrighted characters (updated every 5 minutes).
+- `nsfw_check`: Checks if the content being generated is Not Safe For Work (NSFW). If it is NSFW, a completely black image is generated.
 - `copy_key`: Key to copy the generated image to the clipboard (default "P")
 - `monitor_key`: Key to reset the capture screen (default "ctrl+m")
  

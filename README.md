@@ -70,6 +70,8 @@ lora_path = C:\stable-diffusion-webui\models\Lora\test-1.5-trnkegr_04-128_sdhk.s
 lora_strength = 1.0<br>
 prompt = 1girl, chibi<br>
 negative_prompt = low quality, bad quality, blurry, low resolution<br>
+character_check = True<br>
+nsfw_check = True<br>
 copy_key = p<br>
 monitor_key = ctrl+m
 
@@ -81,6 +83,8 @@ lora_path：LoRAのpath<br>
 lora_strength:LoRAの効き具合。絵柄LoRAの場合1.4位でいいかも<br>
 prompt：プロンプト<br>
 negative_prompt：ネガティブプロンプト<br>
+character_check：版権キャラクターの要素を含んでいないかのチェック（5分に一度反映される）<br>
+nsfw_check：nsfwなコンテンツを生成してないかのチェック（NSFWの場合真黒な画像が生成される）<br>
 copy_key：クリップボードに生成画像がコピーされるキー（デフォルト『P』）<br>
 monitor_key；キャプチャ画面を再設定するキー（デフォルト『ctrl+m』）
 
