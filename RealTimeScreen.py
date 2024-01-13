@@ -181,7 +181,8 @@ def create_default_settings_file(filename):
         'character_check': 'False',
         'nsfw_check': 'False',
         'copy_key': 'p',
-        'monitor_key': 'ctrl+m'
+        'monitor_key': 'ctrl+m',
+        'agree_terms': 'False'
     }
 
     config = configparser.ConfigParser()
@@ -218,6 +219,61 @@ def save_settings(filename, new_settings):
 
     with open(filename, 'w') as configfile:
         config.write(configfile)
+
+
+def save_terms_agreement(config_filename, agree_terms):
+    """免責事項の同意を設定ファイルに保存する"""
+    config = configparser.ConfigParser()
+    config.read(config_filename)
+    
+    if 'Settings' not in config:
+        config['Settings'] = {}
+
+    config['Settings']['Agree_terms'] = str(agree_terms)
+    
+    with open(config_filename, 'w') as configfile:
+        config.write(configfile)
+
+def check_and_display_terms(config_filename):
+    """初回起動時に免責事項を表示し、ユーザーの同意を得る"""
+    config = configparser.ConfigParser()
+    config.read(config_filename)
+
+    # 免責事項に同意しているか確認
+    if config.get('Settings', 'Agree_terms', fallback='False') == 'True':
+        return True
+
+    # 免責事項を表示
+    terms_text = (
+        "責任の免除\n"
+        "このソフトウェアを使用して生成されたイラストに関して、ソフトウェアの制作者は一切の責任を負いません。"
+        "イラストの使用に関連するすべての問題や損害について、ソフト開発者は責任を負いません。\n\n"
+        "イラストの品質\n"
+        "イラスト生成の結果に関して、制作者は品質、正確性、適切さについて保証を行いません。"
+        "生成されたイラストは、アルゴリズムやデータに基づいて自動的に生成されるため、その品質は変動する可能性があります。\n\n"
+        "著作権とライセンス\n"
+        "このソフトウェアを使用して生成されたイラストに関する著作権やライセンスについては、ユーザー自身が確認し、遵守する責任があります。"
+        "ソフト開発者は、生成されたイラストの著作権や使用権について責任を負いません。\n\n"
+        "ソフトウェアの利用\n"
+        "ユーザーは、このソフトウェアを適切に利用し、法的な規制や他人の権利を侵害しないように注意する必要があります。"
+        "ソフト開発者は、ユーザーがソフトウェアを適切に使用することに関して責任を負いません。\n\n"
+        "キャラクターチェック機能に関する注意\n"
+        "このソフトウェアには版権キャラクターを構成する要素が含まれる可能性をAIによって判定する機能がありますが、"
+        "これはあくまで参照用であり確定ではありません。他人の絵を読み込ませて誹謗中傷する等の悪用はしないでください。\n\n"
+        "この免責事項に同意するには「OK」をクリックしてください。OKをクリックすることにより、ユーザーは本免責事項に同意したものとみなされます。\n\n"
+        "この免責事項は、RealTimeScreenの使用に関するすべての問題やリスクに対するソフト開発者の責任を免除するものであり、"
+        "ユーザーはこれを理解し、受け入れたものとみなされます。RealTimeScreenを使用する前に、この免責事項をよく読んでください。"
+        )
+    root = tk.Tk()
+    root.withdraw()  # メインウィンドウを非表示にする
+    response = messagebox.showinfo("免責事項", terms_text)
+    root.destroy()  # メインウィンドウを破棄する
+
+    if response == "ok":
+        save_terms_agreement(config_filename, True)
+        return True
+    else:
+        return False
 
 
 model = None
@@ -399,22 +455,22 @@ class ConfigWindow:
         # 現在の画面のスクリーンショットを取得
         image = screen(self.monitor)
         # タグ分析を実行
-        character_tags_probs = character_analysis(image, model, model_dir)
+        character_tags = character_analysis(image, model, model_dir)
 
         # タグ分析の結果がNone以外の場合、かつ無視リストに含まれていないタグが存在する場合、ダイアログを表示
-        if character_tags_probs and any(name not in self.ignore_list for name, _ in character_tags_probs):
+        if character_tags and any(tag not in self.ignore_list for tag in character_tags):
             # キャラクターごとに改行してメッセージを作成
-            message = "あなたのイラストには次の要素が含まれています：\n" + \
-                      "\n".join([f"{name}: {prob}" for name, prob in character_tags_probs if name not in self.ignore_list]) + \
+            message = "あなたのイラストには次の要素が含まれている可能性があります\n" + \
+                      "（この判定は曖昧なものであり、あくまで参照用です。決して他者のイラストへの誹謗中傷等に使わないで下さい）\n" + \
+                      "\n".join([tag for tag in character_tags if tag not in self.ignore_list]) + \
                       "\n\nこのままイラストを生成続行しますか？"
             # messagebox.showinfo を使用して、OK ボタンのみを表示
             messagebox.showinfo("キャラクターチェック", message)
 
             # OKが選択されたと見なし、キャラクタータグを無視リストに追加
-            for name, _ in character_tags_probs:
-                if name not in self.ignore_list:
-                    self.ignore_list.append(name)
-
+            for tag in character_tags:
+                if tag not in self.ignore_list:
+                    self.ignore_list.append(tag)
         self.is_generating.value = True  # イラスト生成を再開
 
     def schedule_character_check_analysis(self):
@@ -449,7 +505,14 @@ class MainApp:
         self.settings = self.config_window.load_settings(self.config_filename)
 
         self.setup_callbacks()
-        create_default_settings_file(self.config_filename)
+        # 設定ファイルが存在しない場合にのみ、デフォルト設定ファイルを作成
+        if not os.path.exists(self.config_filename):
+            create_default_settings_file(self.config_filename)
+
+        if not check_and_display_terms(self.config_filename):
+            print("ユーザーが免責事項に同意しなかったため、アプリケーションを終了します。")
+            sys.exit()
+
     def setup_callbacks(self):
         self.root.bind("<<SettingsUpdated>>", self.handle_settings_updated)
         self.root.protocol("WM_DELETE_WINDOW", self.cleanup)
