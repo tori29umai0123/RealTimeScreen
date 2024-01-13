@@ -47,15 +47,6 @@ def check_and_download_model(model_dir, model_id, sub_dirs, files):
     else:
         print("モデルは既にダウンロード済みです。")
 
-def download_tagger_model(tagger_path, MODEL_ID):  
-    SUB_DIRS = [
-        ("variables", ["variables.data-00000-of-00001", "variables.index"]),
-    ]
-    FILES = ["keras_metadata.pb", "saved_model.pb", "selected_tags.csv"]
-    model_dir = tagger_path + MODEL_ID
-    check_and_download_model(model_dir, MODEL_ID, SUB_DIRS, FILES)
-
-
 def download_diffusion_model(stable_diffusion_path, MODEL_ID):
     SUB_DIRS = [
         ("feature_extractor", ["preprocessor_config.json"]),
@@ -70,12 +61,20 @@ def download_diffusion_model(stable_diffusion_path, MODEL_ID):
     model_dir = stable_diffusion_path + MODEL_ID
     check_and_download_model(model_dir, MODEL_ID, SUB_DIRS, FILES)
 
-if __name__ == "__main__":
-    stable_diffusion_path = "Models/Stable_diffusion/"
-    MODEL_ID = "852wa/SDHK"
-    download_diffusion_model(stable_diffusion_path, MODEL_ID)
+def download_tagger_model(tagger_path, MODEL_ID):  
+    SUB_DIRS = [
+        ("variables", ["variables.data-00000-of-00001", "variables.index"]),
+    ]
+    FILES = ["keras_metadata.pb", "saved_model.pb", "selected_tags.csv"]
+    model_dir = tagger_path + MODEL_ID
+    check_and_download_model(model_dir, MODEL_ID, SUB_DIRS, FILES)
 
-    tagger_path = os.path.join(parent_directory, 'Models/')
-    MODEL_ID = "SmilingWolf/wd-v1-4-moat-tagger-v2"
-    model_dir = stable_diffusion_path + MODEL_ID
-    download_tagger_model(tagger_path, MODEL_ID)
+def download_safety_checker_model(safety_checker_path, MODEL_ID):
+    FILES = ["config.json", "preprocessor_config.json", "pytorch_model.bin"]
+    model_dir = safety_checker_path + MODEL_ID
+    check_and_download_model(model_dir, MODEL_ID,  [], FILES)
+
+def download_clip_vit_base_patch32_model(clip_vit_base_patch32_path, MODEL_ID):
+    FILES = ["config.json", "flax_model.msgpack", "merges.txt", "preprocessor_config.json", "pytorch_model.bin", "special_tokens_map.json", "tf_model.h5", "tokenizer.json", "tokenizer_config.json", "vocab.json"]
+    model_dir = clip_vit_base_patch32_path + MODEL_ID
+    check_and_download_model(model_dir, MODEL_ID,  [], FILES)

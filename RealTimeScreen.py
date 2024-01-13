@@ -11,7 +11,7 @@ from PIL import Image, ImageTk
 import PIL.Image
 import mss
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import fire
 import pyperclip
 import io
@@ -19,12 +19,13 @@ import win32clipboard
 import keyboard 
 import configparser
 from typing import Optional, Dict
-#import logging
 from streamdiffusion.image_utils import pil2tensor, postprocess_image
 from utils.viewer import receive_images
 from utils.wrapper import StreamDiffusionWrapper
 from utils.models_dl import download_diffusion_model, download_tagger_model
-from utils.tagger import modelLoad, analysis
+from utils.tagger import modelLoad, analysis, character_analysis
+
+
 
 dpath = os.path.dirname(sys.argv[0])
 
@@ -61,7 +62,7 @@ def dummy_screen(width, height):
     return screen_data
 
 
-def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, lora_dict, prompt, negative_prompt, acceleration, monitor, inputs, update_interval, is_generating):
+def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, lora_dict, prompt, negative_prompt, acceleration, monitor, inputs, use_safety_checker, update_interval, is_generating):
     frame_buffer_size = 1
     if acceleration == "tensorrt":
         original_width = width=monitor['width']
@@ -95,6 +96,7 @@ def image_generation_process(queue, fps_queue, model_id_or_path, t_index_list, l
         use_denoising_batch=True,
         cfg_type="self",
         seed=2,
+        use_safety_checker=use_safety_checker,
     )
 
     stream.prepare(
@@ -176,6 +178,8 @@ def create_default_settings_file(filename):
         'lora_strength': 1.0,
         'prompt': '',
         'negative_prompt': 'low quality, bad quality, blurry, low resolution',
+        'character_check': 'False',
+        'nsfw_check': 'False',
         'copy_key': 'p',
         'monitor_key': 'ctrl+m'
     }
@@ -201,16 +205,16 @@ def create_default_settings_file(filename):
         config.write(configfile)
 
 def save_settings(filename, new_settings):
-    """設定を ini ファイルに保存する"""
+    """Save settings to an ini file."""
     config = configparser.ConfigParser()
-    config.read(filename)  # 既存の設定を読み込む
+    config.read(filename)  # Read existing settings
 
     if 'Settings' not in config:
         config['Settings'] = {}
 
-    # 既存の設定を保持しつつ、新しい設定で更新する
+    # Update with new settings, converting all values to strings
     for key, value in new_settings.items():
-        config['Settings'][key] = value
+        config['Settings'][key] = str(value)  # Convert to string
 
     with open(filename, 'w') as configfile:
         config.write(configfile)
@@ -223,11 +227,12 @@ class ConfigWindow:
         self.root = root
         root.title("Config")
         label = tk.Label(root)
-        self.root.geometry("600x200")  # ウィンドウのサイズを設定
+        self.root.geometry("600x250")  # ウィンドウのサイズを設定
         root.attributes('-topmost', True)  # ウィンドウを最前面に保つ
         self.settings_updated = False  # 更新フラグ
         self.monitor = monitor
         self.is_generating = is_generating
+        self.ignore_list = []
 
         # 第二列を伸縮可能に設定
         root.columnconfigure(1, weight=1)
@@ -269,14 +274,25 @@ class ConfigWindow:
         self.negative_prompt_entry = ttk.Entry(root)
         self.negative_prompt_entry.grid(row=6, column=1, sticky=tk.EW)
 
+        # キャラクターチェッカーの入力
+        self.character_check_var = tk.BooleanVar()
+        # チェックボックスの作成
+        self.character_check = ttk.Checkbutton(root, text="Character Check", variable=self.character_check_var)
+        self.character_check.grid(row=7, column=0, columnspan=2, sticky=tk.W)
+
+        # NSFWチェッカーの入力
+        self.nsfw_check_var = tk.BooleanVar()
+        # チェックボックスの作成
+        self.nsfw_check = ttk.Checkbutton(root, text="NSFW Check", variable=self.nsfw_check_var)
+        self.nsfw_check.grid(row=8, column=0, columnspan=2, sticky=tk.W)
+
       # 設定ボタン
         self.update_button = ttk.Button(root, text="Setting", command=self.update_settings)
-        self.update_button.grid(row=7, column=0, columnspan=2, sticky=tk.EW)
+        self.update_button.grid(row=9, column=0, columnspan=2, sticky=tk.EW)
 
       # Prompt分析ボタン 
         self.prompt_analysis_button = ttk.Button(root, text="Prompt Analysis", command=self.prompt_analysis)
-        self.prompt_analysis_button.grid(row=8, column=0, columnspan=2, sticky=tk.EW)  
-        
+        self.prompt_analysis_button.grid(row=10, column=0, columnspan=2, sticky=tk.EW)          
         
         if not os.path.exists(config_filename):
             create_default_settings_file(config_filename)
@@ -290,6 +306,13 @@ class ConfigWindow:
         self.lora_strength_entry.insert(0, str(self.settings.get('lora_strength', '')))  # 数値は文字列に変換
         self.prompt_entry.insert(0, self.settings.get('prompt', ''))
         self.negative_prompt_entry.insert(0, self.settings.get('negative_prompt', ''))
+        character_check_setting = self.settings.get('character_check', False)
+        self.character_check_var.set(character_check_setting == 'True')  # 文字列 'True' かどうかを確認
+        nsfw_check_setting = self.settings.get('nsfw_check', False)
+        self.nsfw_check_var.set(nsfw_check_setting == 'True')  # 文字列 'True' かどうかを確認
+
+        # character_check_analysisの定期実行を開始
+        self.schedule_character_check_analysis()
 
     def load_settings(self, config_filename):
         """INIファイルから設定を読み込む"""
@@ -313,7 +336,9 @@ class ConfigWindow:
             'lora_path': self.lora_path_entry.get(),
             'lora_strength': self.lora_strength_entry.get(),
             'prompt': self.prompt_entry.get(),
-            'negative_prompt': self.negative_prompt_entry.get()
+            'negative_prompt': self.negative_prompt_entry.get(),
+            'character_check': self.character_check_var.get(),
+            'nsfw_check': self.nsfw_check_var.get(),
         }
 
 
@@ -343,6 +368,46 @@ class ConfigWindow:
         self.prompt_entry.insert(0, tag)
         self.is_generating.value = True  # イラスト生成を再開
 
+    def character_check_analysis(self):
+        self.is_generating.value = False
+        global model
+        tagger_path = os.path.join(dpath, 'Models/')
+        MODEL_ID = "SmilingWolf/wd-v1-4-moat-tagger-v2"
+        model_dir = os.path.join(tagger_path, MODEL_ID)
+        if not os.path.exists(model_dir):
+            download_tagger_model(tagger_path, MODEL_ID)
+        if model is None:
+            model = modelLoad(model_dir)
+
+        # 現在の画面のスクリーンショットを取得
+        image = screen(self.monitor)
+        # タグ分析を実行
+        character_tags_probs = character_analysis(image, model, model_dir)
+
+        # タグ分析の結果がNone以外の場合、かつ無視リストに含まれていないタグが存在する場合、ダイアログを表示
+        if character_tags_probs and any(name not in self.ignore_list for name, _ in character_tags_probs):
+            # キャラクターごとに改行してメッセージを作成
+            message = "あなたのイラストには次の要素が含まれています：\n" + \
+                      "\n".join([f"{name}: {prob}" for name, prob in character_tags_probs if name not in self.ignore_list]) + \
+                      "\n\nこのままイラストを生成続行しますか？"
+            user_choice = messagebox.askokcancel("キャラクターチェック", message)
+
+            if user_choice:
+                # OKが選択された場合、キャラクタータグを無視リストに追加
+                for name, _ in character_tags_probs:
+                    if name not in self.ignore_list:
+                        self.ignore_list.append(name)
+            else:
+                # キャンセルが選択された場合、コンフィグウインドウを閉じる
+                self.root.destroy()
+
+        self.is_generating.value = True  # イラスト生成を再開
+
+    def schedule_character_check_analysis(self):
+        if self.character_check_var.get():  # character_checkがTrueの場合のみ実行
+            self.character_check_analysis()
+        # 5分（300000ミリ秒）後に再度スケジュール
+        self.root.after(300000, self.schedule_character_check_analysis)
 
     def get_settings(self):
         if self.settings_updated:
@@ -410,8 +475,11 @@ class MainApp:
         model_dir = stable_diffusion_path + MODEL_ID
         if not os.path.exists(model_dir):
                 download_diffusion_model(stable_diffusion_path, MODEL_ID)
+
+        use_safety_checker = bool(user_settings.get("nsfw_check"))
+
         # 新しいプロセスを作成して開始
-        self.process1 = Process(target=image_generation_process, args=(self.queue, self.fps_queue, model_dir, t_index_list, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], self.acceleration, self.monitor, self.inputs, update_interval, self.is_generating))
+        self.process1 = Process(target=image_generation_process, args=(self.queue, self.fps_queue, model_dir, t_index_list, lora_dict, user_settings["prompt"], user_settings["negative_prompt"], self.acceleration, self.monitor, self.inputs, use_safety_checker, update_interval, self.is_generating))
         self.process1.start()
         self.process2 = Process(target=receive_images, args=(self.queue, self.fps_queue, user_settings))
         self.process2.start()
@@ -445,14 +513,5 @@ def main(acceleration=None):
     app.run()
 
 if __name__ == "__main__":
-    # log_path = os.path.join(dpath, 'error.log')
-    # logging.basicConfig(filename=log_path, level=logging.DEBUG)
-
-    # try:
-    #     multiprocessing.freeze_support()
-    #     fire.Fire(main)
-    # except Exception as e:
-    #     logging.exception("エラーが発生しました")
-
     multiprocessing.freeze_support()
     fire.Fire(main)

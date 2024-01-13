@@ -23,7 +23,5 @@ pip install accelerate==0.25.0
 Write-Output "Installing deps..."
 pip install --upgrade -r requirements.txt
 
-python utils/benchmark.py --acceleration xformers
-
 Write-Output "Install completed"
 Read-Host | Out-Null ;

@@ -31,7 +31,5 @@ pip install tensorflow
 Write-Output "Installing deps..."
 pip install --upgrade -r requirements.txt
 
-python utils/benchmark.py --acceleration tensorrt
-
 Write-Output "Install completed"
 Read-Host | Out-Null ;

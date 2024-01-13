@@ -1,5 +1,6 @@
 import gc
 import os
+import sys
 from pathlib import Path
 import traceback
 from typing import List, Literal, Optional, Union, Dict
@@ -12,10 +13,13 @@ from PIL import Image
 from streamdiffusion import StreamDiffusion
 from streamdiffusion.image_utils import postprocess_image
 
-
 torch.set_grad_enabled(False)
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
+
+from .models_dl import download_safety_checker_model, download_clip_vit_base_patch32_model
+
+dpath = os.path.dirname(sys.argv[0])
 
 
 class StreamDiffusionWrapper:
@@ -662,12 +666,23 @@ class StreamDiffusionWrapper:
             from diffusers.pipelines.stable_diffusion.safety_checker import (
                 StableDiffusionSafetyChecker,
             )
+            models_path = os.path.join(dpath, 'Models/')
+
+            safety_checker_MODEL_ID = "CompVis/stable-diffusion-safety-checker"
+            safety_checker_model_dir = models_path + safety_checker_MODEL_ID
+            if not os.path.exists(safety_checker_model_dir):
+                download_safety_checker_model(models_path, safety_checker_MODEL_ID)
+
+            clip_vit_base_patch32_MODEL_ID = "openai/clip-vit-base-patch32"
+            clip_vit_base_patch32_model_dir = models_path + clip_vit_base_patch32_MODEL_ID
+            if not os.path.exists(clip_vit_base_patch32_model_dir):
+                download_clip_vit_base_patch32_model(models_path, clip_vit_base_patch32_MODEL_ID)
 
             self.safety_checker = StableDiffusionSafetyChecker.from_pretrained(
-                "CompVis/stable-diffusion-safety-checker"
+                safety_checker_model_dir
             ).to(pipe.device)
             self.feature_extractor = CLIPFeatureExtractor.from_pretrained(
-                "openai/clip-vit-base-patch32"
+                clip_vit_base_patch32_model_dir
             )
             self.nsfw_fallback_img = Image.new("RGB", (512, 512), (0, 0, 0))
 
