@@ -18,6 +18,9 @@ Users are responsible for verifying and complying with the copyright and licensi
 ## Use of Software
 Users should use this software appropriately, ensuring not to violate legal regulations or infringe upon the rights of others. The software developers are not responsible for the proper usage of the software by the users.
 
+## Notice Regarding Character Check Function
+This software includes a function that uses AI to determine the potential inclusion of elements constituting copyrighted characters. However, this is solely for reference purposes and is not definitive. Please do not misuse this feature by uploading someone else's artwork for defamation or other malicious purposes.
+
 This disclaimer absolves the software developers of any responsibility for all issues and risks associated with the use of RealTimeScreen. Users are deemed to have understood and accepted this upon using RealTimeScreen. Please read this disclaimer carefully before using RealTimeScreen.
 
 ## Prerequisites
