@@ -87,7 +87,6 @@ lora_path：LoRAのpath<br>
 lora_strength:LoRAの効き具合。絵柄LoRAの場合1.4位でいいかも<br>
 prompt：プロンプト<br>
 negative_prompt：ネガティブプロンプト<br>
-character_check：版権キャラクターの要素を含んでいないかのチェック（5分に一度反映される）<br>
 nsfw_check：nsfwなコンテンツを生成してないかのチェック（NSFWの場合真黒な画像が生成される）<br>
 copy_key：クリップボードに生成画像がコピーされるキー（デフォルト『P』）<br>
 monitor_key；キャプチャ画面を再設定するキー（デフォルト『ctrl+m』）
