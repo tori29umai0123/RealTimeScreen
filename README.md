@@ -58,7 +58,8 @@ git clone https://github.com/tori29umai0123/RealTimeScreen.git
 ④起動すると半透明のダミースクリーンが現れるのでキャプチャしたい範囲に配置（大きさも変えられます）<br>
 ⑤『Setting』ボタンを押すと生成が開始されます。『P』キーを押すとクリップボードに画像が貼り付けられ、『Ctrl+M』でキャプチャ範囲の再指定ができます。<br>
 このキーボードショートカットはsettings.iniファイルから設定することもできます。<br>
-『Prompt Analysis』ボタンを押すとキャプチャ範囲のイラストのprompt分析をします。
+『Prompt Analysis』ボタンを押すとキャプチャ範囲のイラストのprompt分析をします。<br>
+『Charact Check』ボタンを押すとキャプチャ範囲のイラストが版権キャラクターの要素を含んでいないかのチェックをします。<br>
 
 # 更新
 ①update.ps1（あるいはupdate_tensorrt.ps1）を右クリック→PowerShellで実行<br>
@@ -73,7 +74,6 @@ lora_path = C:\stable-diffusion-webui\models\Lora\test-1.5-trnkegr_04-128_sdhk.s
 lora_strength = 1.0<br>
 prompt = 1girl, chibi<br>
 negative_prompt = low quality, bad quality, blurry, low resolution<br>
-character_check = True<br>
 nsfw_check = True<br>
 copy_key = p<br>
 monitor_key = ctrl+m
@@ -101,7 +101,6 @@ C:\RealTimeScreen（フォルダ）<br>
 ③venv.cmdを実行。
 ```
 pip install pyinstaller
-pip install logging
 pyinstaller C:/RealTimeScreen/RealTimeScreen.py
 xcopy /E /I /Y venv\Lib\site-packages\xformers dist\RealTimeScreen\_internal\xformers
 xcopy /E /I /Y venv\Lib\site-packages\tensorrt dist\RealTimeScreen\_internal\tensorrt
